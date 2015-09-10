@@ -7,7 +7,7 @@ module.exports = function (server) {
   // Array of routes for Hapi
   var routeTable = [{
     method: 'POST',
-    path: 'api/group/create',
+    path: '/api/group/create',
     config: controller.group.create
   }];
   return routeTable;
