@@ -9,6 +9,10 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/group/create',
     config: controller.group.create
+  }, {
+    method: 'GET',
+    path: '/',
+    config: controller.base.index
   }];
   return routeTable;
 };
