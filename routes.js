@@ -13,6 +13,10 @@ module.exports = function (server) {
     method: 'GET',
     path: '/',
     config: controller.base.index
+  }, {
+    method: 'POST',
+    path: '/api/event/create',
+    config: controller.event.create
   }];
   return routeTable;
 };
