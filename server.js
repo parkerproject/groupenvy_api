@@ -1,5 +1,5 @@
 var Hapi = require('hapi');
-var server = new Hapi.Server('0.0.0.0', 1100, {});
+var server = new Hapi.Server('0.0.0.0', 1335, {});
 
 
 // Export the server to be required elsewhere.
