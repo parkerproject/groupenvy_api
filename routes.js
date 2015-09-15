@@ -6,6 +6,26 @@ module.exports = function (server) {
 
   // Array of routes for Hapi
   var routeTable = [{
+    method: 'GET',
+    path: '/images/{path*}',
+    config: controller.assets.images
+    }, {
+    method: 'GET',
+    path: '/css/{path*}',
+    config: controller.assets.css
+    }, {
+    method: 'GET',
+    path: '/js/{path*}',
+    config: controller.assets.js
+   }, {
+    method: 'GET',
+    path: '/video/{path*}',
+    config: controller.assets.video
+   }, {
+    method: 'POST',
+    path: '/email/send',
+    config: controller.email.send
+  }, {
     method: 'POST',
     path: '/api/group/create',
     config: controller.group.create

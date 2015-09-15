@@ -11,14 +11,10 @@ module.exports = {
   index: {
     handler: function (request, reply) {
 
-      "use strict";
-      reply({
-        status: 'figuring that out'
-      });
+      reply.view('index', {});
     },
-
-    validate: {
-      query: {}
+    app: {
+      name: 'homepage'
     }
 
   }
