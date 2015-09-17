@@ -37,6 +37,10 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/event/create',
     config: controller.event.create
+  }, {
+    method: 'POST',
+    path: '/api/channel/post',
+    config: controller.channels.event
   }];
   return routeTable;
 };
