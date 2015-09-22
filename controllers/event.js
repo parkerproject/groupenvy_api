@@ -13,14 +13,19 @@ module.exports = {
 
       "use strict";
       var _event = request.payload;
-      var geo = _event.geo.split(',');
-      _event.loc = {
-        type: "Point",
-        coordinates: [Number(geo[0]), Number(geo[1])]
-      };
+      if (request.payload.geo) {
+        var geo = _event.geo.split(',');
+        _event.loc = {
+          type: "Point",
+          coordinates: [Number(geo[0]), Number(geo[1])]
+        };
+      }
+
+      var name = (_event.name) ? _event.name : "";
+
 
       db.events.find({
-        name: _event.name
+        name: name
       }).limit(1, function (err, docs) {
 
         if (docs.length !== 0) {

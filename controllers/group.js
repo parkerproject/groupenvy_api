@@ -13,9 +13,10 @@ module.exports = {
 
       "use strict";
       var group = request.payload;
+      var name = (group.name) ? group.name : "";
 
       db.groups.find({
-        name: group.name
+        name: name
       }).limit(1, function (err, docs) {
 
         if (docs.length !== 0) {
