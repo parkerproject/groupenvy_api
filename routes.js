@@ -45,6 +45,14 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/comment/create',
     config: controller.comment.create
+  }, {
+    method: 'GET',
+    path: '/api/groups',
+    config: controller.groups.index
+  }, {
+    method: 'GET',
+    path: '/api/events',
+    config: controller.events.index
   }];
   return routeTable;
 };
