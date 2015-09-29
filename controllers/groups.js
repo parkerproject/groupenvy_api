@@ -3,7 +3,6 @@ var collections = ['groups'];
 var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
-var google = require('google');
 var server = require('../server');
 
 
@@ -23,12 +22,15 @@ module.exports = {
         reply(results);
       });
     },
+    description: 'Get Groups',
+    notes: 'Returns list of groups',
+    tags: ['api'],
 
     validate: {
       query: {
-        key: Joi.string().required(),
-        limit: Joi.number().integer().min(1).default(20),
-        offset: Joi.number().min(1).integer()
+        key: Joi.string().required().description('API key to access data'),
+        limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
+        offset: Joi.number().min(1).integer().description('defaults to 0')
       }
     }
 

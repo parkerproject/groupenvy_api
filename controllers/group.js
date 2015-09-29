@@ -3,7 +3,6 @@ var collections = ['groups'];
 var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
-var google = require('google');
 var server = require('../server');
 
 
@@ -41,15 +40,19 @@ module.exports = {
       });
     },
 
+    description: 'Create Group',
+    notes: 'Create new Group',
+    tags: ['api'],
+
     validate: {
       payload: {
-        key: Joi.string().required(),
-        name: Joi.string().required(),
-        public: Joi.string().required(),
-        picture_id: Joi.string().required(),
-        creator: Joi.string().required(),
-        date_created: Joi.string().required(),
-        members: Joi.array()
+        key: Joi.string().required().description('API key to access data'),
+        name: Joi.string().required().description('name of group'),
+        public: Joi.string().required().description('boolean; true or false'),
+        picture_id: Joi.string().required().description('image id of group image'),
+        creator_id: Joi.string().required().description('id of group creator'),
+        creator_name: Joi.string().required().description('name of group creator'),
+        date_created: Joi.string().required().description('date that group was created')
       }
     }
 

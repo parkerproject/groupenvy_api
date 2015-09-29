@@ -1,4 +1,5 @@
 require('dotenv').load();
+var Joi = require('joi');
 var Pusher = require('pusher');
 var pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -27,8 +28,17 @@ module.exports = {
 
     },
 
+    description: 'Activity controller',
+    notes: 'Realtime activity controller',
+    tags: ['api'],
+
     validate: {
-      query: {}
+      payload: {
+        key: Joi.string().required().description('API key to access data'),
+        activity_name: Joi.string().required().description('name of activity'),
+        activity_message: Joi.string().required().description('activity message'),
+        user_id: Joi.string().required().description('user id of person that triggered the activity')
+      }
     }
 
   }

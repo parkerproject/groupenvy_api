@@ -3,9 +3,7 @@ var collections = ['comments'];
 var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
-var google = require('google');
 var server = require('../server');
-var Joi = require('joi');
 
 
 module.exports = {
@@ -28,12 +26,17 @@ module.exports = {
       });
     },
 
+    description: 'Post comment',
+    notes: 'Post a comment',
+    tags: ['api'],
+
     validate: {
       payload: {
-        key: Joi.string().required(),
-        comment: Joi.string().required(),
-        user_id: Joi.string().required(),
-        group_id: Joi.string().required()
+        key: Joi.string().required().description('API key to access data'),
+        comment: Joi.string().required().description('comment to post'),
+        user_id: Joi.string().required().description('user id of commentator'),
+        user_name: Joi.string().required().description('name of commentator'),
+        group_id: Joi.string().required().description('group id')
       }
     }
 
