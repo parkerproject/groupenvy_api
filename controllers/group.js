@@ -13,6 +13,9 @@ module.exports = {
 
       "use strict";
       var group = request.payload;
+      if (!group.key || group.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
       var name = (group.name) ? group.name : "";
 
       db.groups.find({
@@ -39,7 +42,15 @@ module.exports = {
     },
 
     validate: {
-      query: {}
+      payload: {
+        key: Joi.string().required(),
+        name: Joi.string().required(),
+        public: Joi.string().required(),
+        picture_id: Joi.string().required(),
+        creator: Joi.string().required(),
+        date_created: Joi.string().required(),
+        members: Joi.array()
+      }
     }
 
   }

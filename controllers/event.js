@@ -13,6 +13,9 @@ module.exports = {
 
       "use strict";
       var _event = request.payload;
+      if (!_event.key || _event.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
       if (request.payload.geo) {
         var geo = _event.geo.split(',');
         _event.loc = {
@@ -48,7 +51,17 @@ module.exports = {
     },
 
     validate: {
-      query: {}
+      payload: {
+        key: Joi.string().required(),
+        name: Joi.string().required(),
+        public: Joi.string().required(),
+        picture_id: Joi.string().required(),
+        creator: Joi.string().required(),
+        date_created: Joi.string().required(),
+        location: Joi.string().required(),
+        geo: Joi.string().required(),
+        event_date: Joi.string().required()
+      }
     }
 
   }
