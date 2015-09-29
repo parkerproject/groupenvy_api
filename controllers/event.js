@@ -64,7 +64,8 @@ module.exports = {
         date_created: Joi.string().required().description('date that event was created'),
         location: Joi.string().required().description('event location'),
         geo: Joi.string().required().description('geo location of event, format should be geo=longitude,latitude'),
-        event_date: Joi.string().required().description('event date')
+        event_date: Joi.string().required().description('event date'),
+        description: Joi.string().required().description('event description')
       }
     }
 

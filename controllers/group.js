@@ -52,7 +52,8 @@ module.exports = {
         picture_id: Joi.string().required().description('image id of group image'),
         creator_id: Joi.string().required().description('id of group creator'),
         creator_name: Joi.string().required().description('name of group creator'),
-        date_created: Joi.string().required().description('date that group was created')
+        date_created: Joi.string().required().description('date that group was created'),
+        description: Joi.string().required().description('group description')
       }
     }
 
