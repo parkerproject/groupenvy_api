@@ -18,7 +18,13 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
 
-      db.groups.find({}).skip(skip).limit(limit, function (err, results) {
+      var groupObject = {};
+
+      if (request.query.creator.id) {
+        groupObject.creator_id = request.query.creator_id;
+      }
+
+      db.groups.find(groupObject).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
     },
@@ -30,7 +36,8 @@ module.exports = {
       query: {
         key: Joi.string().required().description('API key to access data'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
-        offset: Joi.number().min(1).integer().description('defaults to 0')
+        offset: Joi.number().min(1).integer().description('defaults to 0'),
+        creator_id: Joi.string().description('id of the group creator')
       }
     }
 
