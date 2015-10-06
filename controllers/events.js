@@ -38,7 +38,7 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().min(1).integer().description('defaults to 0'),
-        creator_id: Joi.string().description('id of the creator')
+        creator_id: Joi.string().description('id of the creator, to filter events created user')
       }
     },
 
