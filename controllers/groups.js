@@ -20,7 +20,7 @@ module.exports = {
 
       var groupObject = {};
 
-      if (request.query.creator.id) {
+      if (request.query.creator_id) {
         groupObject.creator_id = request.query.creator_id;
       }
 
