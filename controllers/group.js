@@ -72,7 +72,7 @@ module.exports = {
       var groupObject = {};
 
       if (request.query.group_id) {
-        groupObject._id = mongojs.ObjectId(request.query.group_id);
+        groupObject.group_id = request.query.group_id;
       }
 
       db.groups.find(groupObject).limit(1, function (err, results) {
@@ -86,7 +86,7 @@ module.exports = {
     validate: {
       query: {
         key: Joi.string().required().description('API key to access data'),
-        group_id: Joi.number().required().description('id of the group')
+        group_id: Joi.string().required().description('id of the group')
       }
     }
 
