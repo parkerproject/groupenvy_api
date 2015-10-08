@@ -84,7 +84,7 @@ module.exports = {
       var eventObject = {};
 
       if (request.query.event_id) {
-        eventObject._id = mongojs.ObjectId(request.query.event_id);
+        eventObject.event_id = request.query.event_id;
       }
 
       db.events.find(eventObject).limit(1, function (err, results) {
@@ -98,7 +98,7 @@ module.exports = {
     validate: {
       query: {
         key: Joi.string().required().description('API key to access data'),
-        event_id: Joi.number().required().description('id of the event')
+        event_id: Joi.string().required().description('id of the event')
       }
     }
 
@@ -113,7 +113,7 @@ module.exports = {
       }
 
       db.events.update({
-        _id: mongojs.ObjectId(request.payload.event_id)
+        event_id: request.payload.event_id
       }, {
         $addToSet: {
           members: request.payload.user_id
@@ -145,7 +145,7 @@ module.exports = {
       }
 
       db.events.update({
-        _id: mongojs.ObjectId(request.payload.event_id)
+        event_id: request.payload.event_id
       }, {
         $pull: {
           members: request.payload.user_id
