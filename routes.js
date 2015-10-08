@@ -30,6 +30,14 @@ module.exports = function (server) {
     path: '/api/group/create',
     config: controller.group.create
   }, {
+    method: 'POST',
+    path: '/api/group/member',
+    config: controller.group.member
+  }, {
+    method: 'POST',
+    path: '/api/group/member/remove',
+    config: controller.group.remove
+  }, {
     method: 'GET',
     path: '/',
     config: controller.base.index
@@ -37,6 +45,14 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/event/create',
     config: controller.event.create
+  }, {
+    method: 'POST',
+    path: '/api/event/member',
+    config: controller.event.member
+  }, {
+    method: 'POST',
+    path: '/api/event/member/remove',
+    config: controller.event.remove
   }, {
     method: 'POST',
     path: '/api/channel/post',
@@ -51,8 +67,24 @@ module.exports = function (server) {
     config: controller.groups.index
   }, {
     method: 'GET',
+    path: '/api/group',
+    config: controller.group.get
+  }, {
+    method: 'GET',
     path: '/api/events',
     config: controller.events.index
+  }, {
+    method: 'GET',
+    path: '/api/event',
+    config: controller.event.get
+  }, {
+    method: 'GET',
+    path: '/api/events/search',
+    config: controller.searchEvents.index
+  }, {
+    method: 'GET',
+    path: '/api/groups/search',
+    config: controller.searchGroups.index
   }];
   return routeTable;
 };

@@ -1,6 +1,7 @@
 require('dotenv').load();
 var collections = ['groups'];
-var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
+var mongojs = require('mongojs');
+var db = mongojs.connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
 var server = require('../server');

@@ -1,9 +1,10 @@
 require('dotenv').load();
 var collections = ['events'];
-var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
+var mongojs = require("mongojs");
+var db = mongojs.connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
-var server = require('../server');
+var randtoken = require('rand-token');
 
 
 module.exports = {
@@ -36,6 +37,7 @@ module.exports = {
             message: 'An event with that name already exists'
           }).type('application/json ');
         } else {
+          _event.event_id = randtoken.generate(10);
           db.events.save(_event, function (err, result) {
             if (result) {
               reply({
@@ -66,6 +68,101 @@ module.exports = {
         geo: Joi.string().required().description('geo location of event, format should be geo=longitude,latitude'),
         event_date: Joi.string().required().description('event date'),
         description: Joi.string().required().description('event description')
+      }
+    }
+
+  },
+
+  get: {
+    handler: function (request, reply) {
+
+      "use strict";
+      if (!request.query.key || request.query.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+
+      var eventObject = {};
+
+      if (request.query.event_id) {
+        eventObject._id = mongojs.ObjectId(request.query.event_id);
+      }
+
+      db.events.find(eventObject).limit(1, function (err, results) {
+        reply(results);
+      });
+    },
+    description: 'Get event',
+    notes: 'Returns an event',
+    tags: ['api'],
+
+    validate: {
+      query: {
+        key: Joi.string().required().description('API key to access data'),
+        event_id: Joi.number().required().description('id of the event')
+      }
+    }
+
+  },
+
+  member: {
+    handler: function (request, reply) {
+
+      "use strict";
+      if (!payload.query.key || payload.query.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+
+      db.events.update({
+        _id: mongojs.ObjectId(request.payload.event_id)
+      }, {
+        $addToSet: {
+          members: request.payload.user_id
+        }
+      }, function () {
+        reply('User added');
+      });
+    },
+    description: 'Add member to event',
+    notes: 'This will add a member to an event',
+    tags: ['api'],
+
+    validate: {
+      payload: {
+        key: Joi.string().required().description('API key to access data'),
+        event_id: Joi.string().required().description('id of the event'),
+        user_id: Joi.string().required().description('id of the user')
+      }
+    }
+
+  },
+
+  remove: {
+    handler: function (request, reply) {
+
+      "use strict";
+      if (!payload.query.key || payload.query.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+
+      db.events.update({
+        _id: mongojs.ObjectId(request.payload.event_id)
+      }, {
+        $pull: {
+          members: request.payload.user_id
+        }
+      }, function () {
+        reply('User removed');
+      });
+    },
+    description: 'Remove member from event',
+    notes: 'This will remove a member from an event',
+    tags: ['api'],
+
+    validate: {
+      payload: {
+        key: Joi.string().required().description('API key to access data'),
+        event_id: Joi.string().required().description('id of the event'),
+        user_id: Joi.string().required().description('id of the user')
       }
     }
 
