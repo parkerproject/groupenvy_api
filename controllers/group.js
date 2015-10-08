@@ -79,8 +79,8 @@ module.exports = {
         reply(results);
       });
     },
-    description: 'Get members',
-    notes: 'Returns members of a group',
+    description: 'Get group',
+    notes: 'Returns a group, you can find all info about this group, e.g members',
     tags: ['api'],
 
     validate: {

@@ -92,7 +92,7 @@ module.exports = {
       });
     },
     description: 'Get event',
-    notes: 'Returns an event',
+    notes: 'Returns an event, you can find all info about this event, e.g members',
     tags: ['api'],
 
     validate: {
