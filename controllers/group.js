@@ -80,85 +80,13 @@ module.exports = {
       });
     },
     description: 'Get group',
-    notes: 'Returns a group, you can find all info about this group, e.g members',
+    notes: 'Returns a group',
     tags: ['api'],
 
     validate: {
       query: {
         key: Joi.string().required().description('API key to access data'),
         group_id: Joi.string().required().description('id of the group')
-      }
-    }
-
-  },
-
-  member: {
-    handler: function (request, reply) {
-
-      "use strict";
-      if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
-      }
-
-      db.groups.findAndModify({
-        query: {
-          group_id: request.payload.group_id
-        },
-        update: {
-          $addToSet: {
-            members: request.payload.user_id
-          }
-        },
-        new: true
-      }, function () {
-        reply('User added');
-      });
-    },
-    description: 'Add member to group',
-    notes: 'This will add a member to a group',
-    tags: ['api'],
-
-    validate: {
-      payload: {
-        key: Joi.string().required().description('API key to access data'),
-        group_id: Joi.string().required().description('id of the group'),
-        user_id: Joi.string().required().description('id of the user')
-      }
-    }
-
-  },
-
-  remove: {
-    handler: function (request, reply) {
-
-      "use strict";
-      if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
-      }
-
-      db.groups.findAndModify({
-        query: {
-          group_id: request.payload.group_id
-        },
-        update: {
-          $pull: {
-            members: request.payload.user_id
-          }
-        },
-        new: true
-      }, function () {
-        reply('User removed');
-      });
-    },
-    description: 'Remove member from group',
-    notes: 'This will remove a member from a group',
-    tags: ['api'],
-
-    validate: {
-      payload: {
-        key: Joi.string().required().description('API key to access data'),
-        group_id: Joi.string().required().description('id of the group'),
-        user_id: Joi.string().required().description('id of the user')
       }
     }
 

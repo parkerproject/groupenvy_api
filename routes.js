@@ -30,13 +30,17 @@ module.exports = function (server) {
     path: '/api/group/create',
     config: controller.group.create
   }, {
-    method: 'POST',
-    path: '/api/group/member',
-    config: controller.group.member
+    method: 'GET',
+    path: '/api/members',
+    config: controller.members.index
   }, {
     method: 'POST',
-    path: '/api/group/member/remove',
-    config: controller.group.remove
+    path: '/api/members/add',
+    config: controller.members.add
+  }, {
+    method: 'POST',
+    path: '/api/members/remove',
+    config: controller.members.remove
   }, {
     method: 'GET',
     path: '/',
@@ -45,14 +49,6 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/event/create',
     config: controller.event.create
-  }, {
-    method: 'POST',
-    path: '/api/event/member',
-    config: controller.event.member
-  }, {
-    method: 'POST',
-    path: '/api/event/member/remove',
-    config: controller.event.remove
   }, {
     method: 'POST',
     path: '/api/channel/post',
