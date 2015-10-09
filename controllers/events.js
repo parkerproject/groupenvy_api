@@ -20,8 +20,12 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
 
-      if (request.query.user_id) {
+      if (request.query.creator_id) {
         eventsObj.creator_id = request.query.creator_id;
+      }
+
+      if (request.query.event_status) {
+        eventsObj.event_status = request.query.event_status;
       }
 
       db.events.find(eventsObj).skip(skip).limit(limit, function (err, results) {
@@ -38,7 +42,8 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().min(1).integer().description('defaults to 0'),
-        creator_id: Joi.string().description('id of the creator, to filter events created user')
+        creator_id: Joi.string().description('id of the creator, to filter events created user'),
+        event_status: Joi.string().description('event status should be public or private (defaults to public)')
       }
     },
 

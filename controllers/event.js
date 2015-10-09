@@ -16,6 +16,11 @@ module.exports = {
       if (!_event.key || _event.key !== process.env.API_KEY) {
         reply('You are not authorized');
       }
+
+      if (_event.event_status !== 'public' || _event.event_status !== 'private') {
+        reply('Event should only be public or private');
+      }
+
       if (request.payload.geo) {
         var geo = _event.geo.split(',');
         _event.loc = {
@@ -59,7 +64,7 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         name: Joi.string().required().description('name of event'),
-        public: Joi.string().required().description('boolean; true or false'),
+        event_status: Joi.string().required().description('event status should be public or private'),
         picture_id: Joi.string().required().description('image id of event image'),
         creator_id: Joi.string().required().description('id of event creator'),
         creator_name: Joi.string().required().description('name of event creator'),

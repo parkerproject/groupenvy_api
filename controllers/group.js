@@ -16,6 +16,11 @@ module.exports = {
       if (!group.key || group.key !== process.env.API_KEY) {
         reply('You are not authorized');
       }
+
+      if (group.group_status !== 'public' || group.group_status !== 'private') {
+        reply('Group should only be public or private');
+      }
+
       var name = (group.name) ? group.name : "";
 
       db.groups.find({
@@ -50,7 +55,7 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         name: Joi.string().required().description('name of group'),
-        public: Joi.string().required().description('boolean; true or false'),
+        group_status: Joi.string().required().description('group status should public or private'),
         picture_id: Joi.string().required().description('image id of group image'),
         creator_id: Joi.string().required().description('id of group creator'),
         creator_name: Joi.string().required().description('name of group creator'),

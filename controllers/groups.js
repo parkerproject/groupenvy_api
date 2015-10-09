@@ -25,6 +25,10 @@ module.exports = {
         groupObject.creator_id = request.query.creator_id;
       }
 
+      if (request.query.group_status) {
+        groupObject.group_status = request.query.group_status;
+      }
+
       db.groups.find(groupObject).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
@@ -38,7 +42,8 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().min(1).integer().description('defaults to 0'),
-        creator_id: Joi.string().description('id of the group creator, to filter groups created by user')
+        creator_id: Joi.string().description('id of the group creator, to filter groups created by user'),
+        group_status: Joi.string().description('group status should be public or private (defaults to public)')
       }
     }
 
