@@ -24,9 +24,7 @@ module.exports = {
         eventsObj.creator_id = request.query.creator_id;
       }
 
-      if (request.query.event_status) {
-        eventsObj.event_status = request.query.event_status;
-      }
+      eventsObj.event_status = request.query.event_status || 'public';
 
       db.events.find(eventsObj).skip(skip).limit(limit, function (err, results) {
         reply(results);
