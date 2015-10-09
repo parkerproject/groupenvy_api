@@ -24,9 +24,8 @@ module.exports = {
       if (request.query.creator_id) {
         groupObject.creator_id = request.query.creator_id;
       }
-
+      //default
       groupObject.group_status = request.query.group_status || 'public';
-
 
       db.groups.find(groupObject).skip(skip).limit(limit, function (err, results) {
         reply(results);
