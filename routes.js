@@ -9,19 +9,19 @@ module.exports = function (server) {
     method: 'GET',
     path: '/images/{path*}',
     config: controller.assets.images
-    }, {
+  }, {
     method: 'GET',
     path: '/css/{path*}',
     config: controller.assets.css
-    }, {
+  }, {
     method: 'GET',
     path: '/js/{path*}',
     config: controller.assets.js
-   }, {
+  }, {
     method: 'GET',
     path: '/video/{path*}',
     config: controller.assets.video
-   }, {
+  }, {
     method: 'POST',
     path: '/email/send',
     config: controller.email.send
@@ -41,6 +41,14 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/members/remove',
     config: controller.members.remove
+  }, {
+    method: 'GET',
+    path: '/api/member/groups',
+    config: controller.member.groups
+  }, {
+    method: 'GET',
+    path: '/api/member/events',
+    config: controller.member.events
   }, {
     method: 'GET',
     path: '/',
