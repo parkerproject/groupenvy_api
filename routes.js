@@ -39,6 +39,10 @@ module.exports = function (server) {
     config: controller.members.add
   }, {
     method: 'POST',
+    path: '/api/members/update',
+    config: controller.members.update
+  }, {
+    method: 'POST',
     path: '/api/members/remove',
     config: controller.members.remove
   }, {

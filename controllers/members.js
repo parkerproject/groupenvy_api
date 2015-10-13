@@ -90,6 +90,50 @@ module.exports = {
 
   },
 
+  update: {
+    handler: function (request, reply) {
+
+      "use strict";
+      if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+
+      var user = {};
+
+      if (query.payload.picture_id) {
+        user.picture_id = query.payload.picture_id;
+      }
+
+      if (query.payload.name) {
+        user.name = query.payload.name;
+      }
+
+
+      db.members.update({
+        user_id: request.payload.user_id
+      }, {
+        $set: user
+      }, {
+        multi: true
+      }, function () {
+        reply('User has been updated');
+      });
+    },
+    description: 'Update a member in all groups and events',
+    notes: 'This will update a member\'s info in all groups and events',
+    tags: ['api'],
+
+    validate: {
+      payload: {
+        key: Joi.string().required().description('API key to access data'),
+        user_id: Joi.string().required().description('id of the user'),
+        picture_id: Joi.string().description('picture id of the user'),
+        name: Joi.string().description('name of the user')
+      }
+    }
+
+  },
+
   remove: {
     handler: function (request, reply) {
 
