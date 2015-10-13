@@ -17,10 +17,6 @@ module.exports = {
         reply('You are not authorized');
       }
 
-      if (_event.event_status !== 'public' || _event.event_status !== 'private') {
-        reply('Event should only be public or private');
-      }
-
       if (request.payload.geo) {
         var geo = _event.geo.split(',');
         _event.loc = {

@@ -17,10 +17,6 @@ module.exports = {
         reply('You are not authorized');
       }
 
-      if (group.group_status !== 'public' || group.group_status !== 'private') {
-        reply('Group should only be public or private');
-      }
-
       var name = (group.name) ? group.name : "";
 
       db.groups.find({
