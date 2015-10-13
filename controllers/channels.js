@@ -18,8 +18,8 @@ module.exports = {
       var eventObj = request.payload;
 
       return new Promise(function (resolve) {
-        pusher.trigger('groupfeed_channel', eventObj.event, {
-          "message": eventObj.message
+        pusher.trigger('groupfeed_channel', eventObj.activity_name, {
+          "message": eventObj.activity_message
         });
         resolve();
       }).then(function () {
