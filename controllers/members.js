@@ -36,7 +36,7 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         type_id: Joi.string().required().description('id of group or event'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
-        offset: Joi.number().min(1).integer().description('defaults to 0'),
+        offset: Joi.number().integer().description('defaults to 0'),
       }
     }
 

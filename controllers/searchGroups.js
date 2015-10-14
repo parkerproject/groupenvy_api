@@ -90,7 +90,7 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         q: Joi.string().required().description('query term, e.g group name or keywords'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
-        offset: Joi.number().min(1).integer().description('defaults to 0')
+        offset: Joi.number().integer().description('defaults to 0')
       }
     }
 

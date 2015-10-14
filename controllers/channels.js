@@ -23,7 +23,10 @@ module.exports = {
         });
         resolve();
       }).then(function () {
-        reply('message pushed');
+        reply({
+          status: 1,
+          message: 'message pushed'
+        });
       });
 
     },
