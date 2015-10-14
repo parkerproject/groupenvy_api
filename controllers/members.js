@@ -65,10 +65,16 @@ module.exports = {
 
         if (result.length === 0) {
           db.members.save(user, function () {
-            reply('User added');
+            reply({
+              status: 1,
+              message: 'User has been added'
+            });
           });
         } else {
-          reply('Already a member');
+          reply({
+            status: 0,
+            message: 'Already a member'
+          });
         }
 
       });
@@ -116,7 +122,10 @@ module.exports = {
       }, {
         multi: true
       }, function () {
-        reply('User has been updated');
+        reply({
+          status: 1,
+          message: 'User has been updated'
+        });
       });
     },
     description: 'Update a member in all groups and events',
@@ -148,7 +157,10 @@ module.exports = {
       };
 
       db.members.remove(user, function () {
-        reply('User removed');
+        reply({
+          status: 1,
+          message: 'User has been removed'
+        });
       });
 
 
