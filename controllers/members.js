@@ -16,25 +16,30 @@ module.exports = {
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
         reply('You are not authorized');
       }
-
-
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
+      var user = {};
 
-      db.members.find({
-        type_id: request.query.type_id
+      if (request.query.user_id) {
+        user.user_id = request.query.user_id;
+      }
+      user.type_id = request.query.type_id;
+
+      db.members.find(user).sort({
+        '_id': -1
       }).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
     },
     description: 'Get members of a group or event',
-    notes: 'Returns members of a group or event',
+    notes: 'Returns members of a group or event, checks if a user is in a group or event',
     tags: ['api'],
 
     validate: {
       query: {
         key: Joi.string().required().description('API key to access data'),
         type_id: Joi.string().required().description('id of group or event'),
+        user_id: Joi.string().description('id of user'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().integer().description('defaults to 0'),
       }
