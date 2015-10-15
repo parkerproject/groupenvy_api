@@ -37,8 +37,6 @@ module.exports = {
       var q = decodeURIComponent(request.query.q);
       var limit = request.query.limit || 20;
       var skip = request.query.offset || 0;
-      var _geo = request.query.geo;
-      var accuracy = 1; // accuracy for computing geo distance
       var queryObj = {};
       q = q.trim();
 
@@ -47,34 +45,18 @@ module.exports = {
         $search: q
       };
 
-
       new Promise(function (resolve) {
-        var _radius = 5 / 3959; // radius in 5 miles
-        if (request.query.geo) {
-          queryObj.loc = _prepareQueryObject(_radius, request.query.geo);
-        }
-        resolve();
-
-      }).then(function () {
-        return new Promise(function (resolve) {
-          db.groups.find(queryObj, {
-            score: {
-              $meta: "textScore"
-            }
-          }).skip(skip).sort({
-            score: {
-              $meta: "textScore"
-            }
-          }).limit(limit, function (err, results) {
-            var res = Array.isArray(results) ? results : [];
-
-            if (_geo && parseFloat(_geo[0]) && parseFloat(_geo[1])) {
-              res = res.sort(function (d1, d2) {
-                return dist(d1.loc.coordinates, _geo, accuracy) - dist(d2.loc.coordinates, _geo, accuracy);
-              });
-            }
-            resolve(res);
-          });
+        db.groups.find(queryObj, {
+          score: {
+            $meta: "textScore"
+          }
+        }).skip(skip).sort({
+          score: {
+            $meta: "textScore"
+          }
+        }).limit(limit, function (err, results) {
+          var res = Array.isArray(results) ? results : [];
+          resolve(res);
         });
       }).then(function (res) {
         reply(res);
