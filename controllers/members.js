@@ -4,7 +4,7 @@ var mongojs = require("mongojs");
 var db = mongojs.connect(process.env.MONGODB_URL, collections);
 var Joi = require('joi');
 var _ = require('lodash');
-var randtoken = require('rand-token');
+var Promise = require('es6-promise').Promise;
 
 
 module.exports = {
@@ -19,16 +19,33 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
       var user = {};
+      var count, data;
 
       if (request.query.user_id) {
         user.user_id = request.query.user_id;
       }
       user.type_id = request.query.type_id;
 
-      db.members.find(user).sort({
-        '_id': -1
-      }).skip(skip).limit(limit, function (err, results) {
-        reply(results);
+      new Promise(function (resolve) {
+        db.members.count(user, function (err, res) {
+          count = res;
+          resolve(count);
+        });
+      }).then(function (res) {
+        return new Promise(function (resolve) {
+          db.members.find(user).sort({
+            '_id': -1
+          }).skip(skip).limit(limit, function (err, results) {
+            data = results;
+            resolve(data);
+          });
+        });
+      }).then(function (res) {
+
+        reply({
+          results: data,
+          attenders_amount: count
+        });
       });
     },
     description: 'Get members of a group or event',
