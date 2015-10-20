@@ -55,7 +55,7 @@ module.exports = {
     validate: {
       query: {
         key: Joi.string().required().description('API key to access data'),
-        type_id: Joi.string().required().description('id of group or event'),
+        type_id: Joi.string().required().description('id of group or event, e.g group_id or event_id'),
         user_id: Joi.string().description('id of user'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().integer().description('defaults to 0'),
@@ -108,7 +108,7 @@ module.exports = {
     validate: {
       payload: {
         key: Joi.string().required().description('API key to access data'),
-        type_id: Joi.string().required().description('id of group or event'),
+        type_id: Joi.string().required().description('id of group or event, e.g group_id or event_id'),
         type: Joi.string().required().description('type should be either "group" or "event"'),
         user_id: Joi.string().required().description('id of the user'),
         picture_id: Joi.string().required().description('picture id of the user'),
@@ -194,7 +194,7 @@ module.exports = {
     validate: {
       payload: {
         key: Joi.string().required().description('API key to access data'),
-        type_id: Joi.string().required().description('id of group or event'),
+        type_id: Joi.string().required().description('id of group or event, e.g group_id or event_id'),
         user_id: Joi.string().required().description('id of the user')
       }
     }
