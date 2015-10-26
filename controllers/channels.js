@@ -43,7 +43,7 @@ module.exports = {
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
         picture_id: Joi.string().required().description('picture id of the user'),
-        date_created: Joi.string().required.description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
+        date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
     }
 
