@@ -42,7 +42,8 @@ module.exports = {
         activity_name: Joi.string().required().description('name of activity'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
-        picture_id: Joi.string().required().description('picture id of the user')
+        picture_id: Joi.string().required().description('picture id of the user'),
+        date_created: Joi.string().required.description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
     }
 
@@ -58,7 +59,9 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
 
-      db.channel.find({}).skip(skip).limit(limit, function (err, results) {
+      db.channel.find({}).sort({
+        date_created: 1
+      }).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
 
