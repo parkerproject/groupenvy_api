@@ -61,7 +61,7 @@ module.exports = {
       var limit = request.query.limit || 20;
 
       db.channel.find({}).sort({
-        date_created: 1
+        date_created: -1
       }).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
