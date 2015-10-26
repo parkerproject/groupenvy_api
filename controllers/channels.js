@@ -19,7 +19,8 @@ module.exports = {
         activity_name: payload.activity_name,
         activity_message: payload.activity_message,
         user_id: payload.user_id,
-        picture_id: payload.picture_id
+        picture_id: payload.picture_id,
+        date_created: payload.date_created
       }, function (err, result) {
         if (result) {
           reply({
