@@ -27,7 +27,7 @@ module.exports = {
       eventsObj.event_status = request.query.event_status || 'public';
 
       db.events.find(eventsObj).sort({
-        date_created: -1
+        date_created: 1
       }).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
