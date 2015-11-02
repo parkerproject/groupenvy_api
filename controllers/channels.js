@@ -16,7 +16,6 @@ module.exports = {
       }
 
       db.channel.save({
-        activity_name: payload.activity_name,
         activity_id: payload.activity_id,
         activity_type: payload.activity_type,
         activity_message: payload.activity_message,
@@ -43,7 +42,6 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         activity_id: Joi.string().required().description('id of activity'),
-        activity_name: Joi.string().required().description('name of activity'),
         activity_type: Joi.string().required().description('type of activity, e.g group or event'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
