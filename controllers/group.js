@@ -34,7 +34,8 @@ module.exports = {
             if (result) {
               reply({
                 status: 1,
-                message: 'Your new group has been created'
+                message: 'Your new group has been created',
+                group_id: group.group_id
               }).type('application/json');
             }
           });

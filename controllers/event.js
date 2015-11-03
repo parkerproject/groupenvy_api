@@ -43,7 +43,8 @@ module.exports = {
             if (result) {
               reply({
                 status: 1,
-                message: 'Your new event has been created'
+                message: 'Your new event has been created',
+                event_id: _event.event_id
               }).type('application/json');
             }
           });
