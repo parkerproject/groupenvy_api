@@ -128,12 +128,12 @@ module.exports = {
 
       var user = {};
 
-      if (query.payload.picture_id) {
-        user.picture_id = query.payload.picture_id;
+      if (request.payload.picture_id) {
+        user.picture_id = request.payload.picture_id;
       }
 
-      if (query.payload.name) {
-        user.name = query.payload.name;
+      if (request.payload.name) {
+        user.name = request.payload.name;
       }
 
 
