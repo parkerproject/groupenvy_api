@@ -42,7 +42,7 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         activity_id: Joi.string().required().description('id of activity'),
-        activity_type: Joi.string().required().description('type of activity, e.g group or event'),
+        activity_type: Joi.string().required().description('type of activity, e.g group, event or follow'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
         picture_id: Joi.string().required().description('picture id of the user'),
