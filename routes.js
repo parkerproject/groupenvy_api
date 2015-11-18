@@ -30,6 +30,14 @@ module.exports = function (server) {
     path: '/api/group/create',
     config: controller.group.create
   }, {
+    method: 'PUT',
+    path: '/api/group/put',
+    config: controller.group.put
+  }, {
+    method: 'DELETE',
+    path: '/api/group/delete',
+    config: controller.group.delete
+  }, {
     method: 'GET',
     path: '/api/members',
     config: controller.members.index
@@ -38,11 +46,11 @@ module.exports = function (server) {
     path: '/api/members/add',
     config: controller.members.add
   }, {
-    method: 'POST',
+    method: 'PUT',
     path: '/api/members/update',
     config: controller.members.update
   }, {
-    method: 'POST',
+    method: 'DELETE',
     path: '/api/members/remove',
     config: controller.members.remove
   }, {
@@ -61,6 +69,14 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/event/create',
     config: controller.event.create
+  }, {
+    method: 'PUT',
+    path: '/api/event/put',
+    config: controller.event.put
+  }, {
+    method: 'DELETE',
+    path: '/api/event/delete',
+    config: controller.event.delete
   }, {
     method: 'POST',
     path: '/api/channel/post',
