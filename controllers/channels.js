@@ -15,14 +15,19 @@ module.exports = {
         reply('You are not authorized');
       }
 
-      db.channel.save({
-        activity_id: payload.activity_id,
-        activity_type: payload.activity_type,
-        activity_message: payload.activity_message,
-        user_id: payload.user_id,
-        picture_id: payload.picture_id,
-        date_created: payload.date_created
-      }, function (err, result) {
+      var activity = {};
+      activity.activity_id = payload.activity_id;
+      activity.activity_type = payload.activity_type;
+      activity.activity_message = payload.activity_message;
+      activity.user_id = payload.user_id;
+      activity.picture_id = payload.picture_id;
+      activity.date_created = payload.date_created;
+
+      if (payload.followed_id) activity.followed_id = payload.followed_id;
+      if (payload.invitee_id) activity.invitee_id = payload.invitee_id;
+
+
+      db.channel.save(activity, function (err, result) {
         if (result) {
           reply({
             status: 1,
@@ -45,6 +50,8 @@ module.exports = {
         activity_type: Joi.string().required().description('type of activity, e.g group, event or follow'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
+        followed_id: Joi.string().description('user id of person that you are following'),
+        invitee_id: Joi.string().description('user id of person inviting you to join a group or event'),
         picture_id: Joi.string().required().description('picture id of the user'),
         date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
