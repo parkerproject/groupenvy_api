@@ -64,6 +64,7 @@ module.exports = {
         event_status: Joi.string().required().description('event status should be public or private'),
         picture_id: Joi.string().required().description('image id of event image'),
         creator_id: Joi.string().required().description('id of event creator'),
+        creator_picture: Joi.string().description('picture of creator'),
         creator_name: Joi.string().required().description('name of event creator'),
         date_created: Joi.string().required().description('date that event was created'),
         location: Joi.string().required().description('event location'),
@@ -145,6 +146,10 @@ module.exports = {
         eventObj.event_date = payload.event_date;
       }
 
+      if (payload.end_date) {
+        eventObj.end_date = payload.end_date;
+      }
+
       if (payload.event_status) {
         eventObj.event_status = payload.event_status;
       }
@@ -182,6 +187,7 @@ module.exports = {
         location: Joi.string().description('event location'),
         geo: Joi.string().description('geo location of event, format should be geo=longitude,latitude'),
         event_date: Joi.string().description('event date'),
+        end_date: Joi.string().description('event end date'),
         description: Joi.string().description('event description'),
         event_id: Joi.string().required().description('id of event')
       }
