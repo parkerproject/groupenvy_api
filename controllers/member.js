@@ -20,19 +20,30 @@ module.exports = {
 
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
-      var filterIds;
+      var filterIds, count;
 
       new Promise(function (resolve) {
 
-        db.members.find({
+        db.members.count({
           user_id: request.query.user_id,
           type: 'event'
-        }, {
-          type_id: 1
-        }).skip(skip).limit(limit, function (err, results) {
-          resolve(results);
+        }, function (err, res) {
+          count = res;
+          resolve(count);
         });
 
+      }).then(function (res) {
+        return new Promise(function (resolve) {
+          db.members.find({
+            user_id: request.query.user_id,
+            type: 'event'
+          }, {
+            type_id: 1
+          }).skip(skip).limit(limit, function (err, results) {
+            resolve(results);
+          });
+
+        });
       }).then(function (res) {
         return new Promise(function (resolve) {
           filterIds = _.pluck(res, "type_id");
@@ -46,7 +57,10 @@ module.exports = {
 
         });
       }).then(function (res) {
-        reply(res);
+        reply({
+          results: res,
+          total_amount: count
+        });
       });
 
 
@@ -77,19 +91,30 @@ module.exports = {
 
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
-      var filterIds;
+      var filterIds, count;
 
       new Promise(function (resolve) {
 
-        db.members.find({
+        db.members.count({
           user_id: request.query.user_id,
           type: 'group'
-        }, {
-          type_id: 1
-        }).skip(skip).limit(limit, function (err, results) {
-          resolve(results);
+        }, function (err, res) {
+          count = res;
+          resolve(count);
         });
 
+      }).then(function (res) {
+        return new Promise(function (resolve) {
+          db.members.find({
+            user_id: request.query.user_id,
+            type: 'group'
+          }, {
+            type_id: 1
+          }).skip(skip).limit(limit, function (err, results) {
+            resolve(results);
+          });
+
+        });
       }).then(function (res) {
         return new Promise(function (resolve) {
           filterIds = _.pluck(res, "type_id");
@@ -103,7 +128,10 @@ module.exports = {
 
         });
       }).then(function (res) {
-        reply(res);
+        reply({
+          results: res,
+          total_amount: count
+        });
       });
     },
     description: 'Get groups a user has joined',
