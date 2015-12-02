@@ -4,6 +4,29 @@ var collections = ['members', 'groups', 'events', 'channel'];
 var mongojs = require("mongojs");
 var db = mongojs.connect(process.env.MONGODB_URL, collections);
 var Promise = require('es6-promise').Promise;
+var Kaiseki = require('kaiseki');
+var kaiseki = new Kaiseki(process.env.PARSE_APP_ID, process.env.PARSE_REST_API_KEY);
+var lodash = require('lodash');
+
+function getUsers(user_id, cb) {
+  var params = {
+    where: {
+      "$relatedTo": {
+        "object": {
+          "__type": "Pointer",
+          "objectId": user_id,
+          "className": "_User"
+        },
+        "key": "following"
+      },
+      //objectId: 'He8hQies9q'
+    }
+  };
+
+  kaiseki.getUsers(params, function (err, res, body, success) {
+    cb(body);
+  });
+}
 
 module.exports = {
   event: {
@@ -95,7 +118,47 @@ module.exports = {
       }
     }
 
-  }
+  },
 
+  notification: {
+    handler: function (request, reply) {
+
+      "use strict";
+      if (!request.query.key || request.query.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+      var skip = request.query.offset || 0;
+      var limit = request.query.limit || 20;
+
+      getUsers(request.query.user_id, function (users) {
+        var user_ids = lodash.pluck(users, 'objectId');
+
+        db.channel.find({
+          user_id: {
+            $in: user_ids
+          }
+        }).sort({
+          date_created: 1
+        }).skip(skip).limit(limit, function (err, results) {
+          reply(results);
+        });
+      });
+
+    },
+
+    description: 'Get notification',
+    notes: 'Returns notification activities',
+    tags: ['api'],
+
+    validate: {
+      query: {
+        key: Joi.string().required().description('API key to access data'),
+        limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
+        offset: Joi.number().integer().description('defaults to 0'),
+        user_id: Joi.string().required().description('id of user')
+      }
+    }
+
+  }
 
 };

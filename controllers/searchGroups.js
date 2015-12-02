@@ -8,21 +8,6 @@ var dist = require('../helpers/dist');
 var Promise = require('es6-promise').Promise;
 
 
-function _prepareQueryObject(radius, location) {
-  if (location) {
-    return {
-      $geoWithin: {
-        $centerSphere: [
-                  [location[0], location[1]], radius
-              ]
-      }
-
-    };
-  } else {
-    return {};
-  }
-}
-
 module.exports = {
 
   index: {

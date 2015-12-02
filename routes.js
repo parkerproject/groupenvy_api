@@ -86,6 +86,10 @@ module.exports = function (server) {
     path: '/api/channel',
     config: controller.channels.index
   }, {
+    method: 'GET',
+    path: '/api/channel/notification',
+    config: controller.channels.notification
+  }, {
     method: 'POST',
     path: '/api/comment/create',
     config: controller.comment.create
