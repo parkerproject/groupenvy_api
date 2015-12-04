@@ -81,44 +81,6 @@ module.exports = {
 
   },
 
-  // index: {
-  //   handler: function (request, reply) {
-  //
-  //     "use strict";
-  //     if (!request.query.key || request.query.key !== process.env.API_KEY) {
-  //       reply('You are not authorized');
-  //     }
-  //     var skip = request.query.offset || 0;
-  //     var limit = request.query.limit || 20;
-  //
-  //     db.channel.find({
-  //       user_id: {
-  //         $ne: request.query.user_id
-  //       }
-  //     }).sort({
-  //       date_created: -1
-  //     }).skip(skip).limit(limit, function (err, results) {
-  //       reply(results);
-  //     });
-  //
-  //
-  //   },
-  //
-  //   description: 'Get groupfeed activities',
-  //   notes: 'Returns groupfeed activities',
-  //   tags: ['api'],
-  //
-  //   validate: {
-  //     query: {
-  //       key: Joi.string().required().description('API key to access data'),
-  //       limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
-  //       offset: Joi.number().integer().description('defaults to 0'),
-  //       user_id: Joi.string().required().description('id of user')
-  //     }
-  //   }
-  //
-  // },
-
   index: {
     handler: function (request, reply) {
 
