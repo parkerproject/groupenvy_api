@@ -46,8 +46,10 @@ module.exports = {
       activity.picture_id = payload.picture_id;
       activity.date_created = payload.date_created;
 
-      if (payload.followed_id) activity.followed_id = payload.followed_id;
-      if (payload.invitee_id) activity.invitee_id = payload.invitee_id;
+      if (payload.target_user_id) {
+        activity.target_user_id = payload.target_user_id;
+      }
+
 
 
       db.channel.save(activity, function (err, result) {
