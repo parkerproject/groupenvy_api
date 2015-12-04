@@ -73,8 +73,8 @@ module.exports = {
         activity_type: Joi.string().required().description('type of activity, e.g group, event, follow, etc.'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
-        followed_id: Joi.string().description('user id of person that you are following'),
-        invitee_id: Joi.string().description('user id of person inviting you to join a group or event'),
+        followed_id: Joi.string().description('user id of person started following'),
+        invitee_id: Joi.string().description('user id of person invited  to join a group or event'),
         picture_id: Joi.string().required().description('picture id of the user'),
         date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
@@ -129,19 +129,35 @@ module.exports = {
       }
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
+      var queryObj = {},
+        activityArr, activityStr;
 
       getUsers(request.query.user_id, function (users) {
         var user_ids = lodash.pluck(users, 'objectId');
+        queryObj.user_id = {
+          $in: user_ids
+        };
 
-        db.channel.find({
-          user_id: {
-            $in: user_ids
-          }
-        }).sort({
-          date_created: 1
-        }).skip(skip).limit(limit, function (err, results) {
-          reply(results);
+        if (request.query.activity_type) {
+          activityStr = request.query.activity_type;
+          activityArr = activityStr.split(',');
+          queryObj.activity_type = {
+            $in: activityArr
+          };
+        }
+
+        db.channel.count(queryObj, function (err, res) {
+          db.channel.find(queryObj).sort({
+            date_created: 1
+          }).skip(skip).limit(limit, function (err, results) {
+            reply({
+              activities: results,
+              total_amount: res
+            });
+          });
+
         });
+
       });
 
     },
@@ -155,7 +171,9 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().integer().description('defaults to 0'),
-        user_id: Joi.string().required().description('id of user')
+        user_id: Joi.string().required().description('id of user'),
+        activity_type: Joi.string().description('list of activities, separated by comma'),
+        last_sync: Joi.string().description('last sync')
       }
     }
 
