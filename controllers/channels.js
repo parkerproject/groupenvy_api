@@ -73,8 +73,7 @@ module.exports = {
         activity_type: Joi.string().required().description('type of activity, e.g group, event, follow, etc.'),
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
-        followed_id: Joi.string().description('user id of person started following'),
-        invitee_id: Joi.string().description('user id of person invited  to join a group or event'),
+        target_user_id: Joi.string().description('user id of person'),
         picture_id: Joi.string().required().description('picture id of the user'),
         date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
@@ -134,9 +133,10 @@ module.exports = {
 
       getUsers(request.query.user_id, function (users) {
         var user_ids = lodash.pluck(users, 'objectId');
-        queryObj.user_id = {
+        queryObj.target_user_id = {
           $in: user_ids
         };
+        queryObj.user_id = request.query.user_id;
 
         if (request.query.activity_type) {
           activityStr = request.query.activity_type;
@@ -146,9 +146,17 @@ module.exports = {
           };
         }
 
+        if (request.query.last_sync) {
+          queryObj.last_sync = {
+            $gt: new Date(decodeURIComponent(request.query.last_sync))
+          };
+        }
+
+        console.log(queryObj);
+
         db.channel.count(queryObj, function (err, res) {
           db.channel.find(queryObj).sort({
-            date_created: 1
+            date_created: -1
           }).skip(skip).limit(limit, function (err, results) {
             reply({
               activities: results,
