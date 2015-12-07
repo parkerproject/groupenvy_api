@@ -97,10 +97,10 @@ module.exports = {
 
       getUsers(request.query.user_id, function (users) {
         var user_ids = lodash.pluck(users, 'objectId');
-        queryObj.target_user_id = {
+        queryObj.user_id = {
           $in: user_ids
         };
-        queryObj.user_id = request.query.user_id;
+        //  queryObj.user_id = request.query.user_id;
 
         if (request.query.activity_type) {
           activityStr = request.query.activity_type;
