@@ -93,22 +93,32 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
       var queryObj = {},
-        activityArr, activityStr;
+        activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined'],
+        caseTwo = ['follow', 'group_invite', 'event_invite'];
+
+      if (request.query.activity_type) {
+        activityStr = request.query.activity_type;
+        activityArr = activityStr.split(',');
+
+        queryObj.activity_type = {
+          $in: activityArr
+        };
+      }
 
       getUsers(request.query.user_id, function (users) {
         var user_ids = lodash.pluck(users, 'objectId');
-        queryObj.user_id = {
-          $in: user_ids
-        };
-        //  queryObj.user_id = request.query.user_id;
 
-        if (request.query.activity_type) {
-          activityStr = request.query.activity_type;
-          activityArr = activityStr.split(',');
-          queryObj.activity_type = {
-            $in: activityArr
+        if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
+          queryObj.user_id = {
+            $in: user_ids
           };
         }
+
+        if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
+          queryObj.user_id = request.query.user_id;
+        }
+
+
 
         if (request.query.last_sync) {
           console.log(decodeURIComponent(request.query.last_sync));
@@ -118,6 +128,7 @@ module.exports = {
         }
 
         console.log(queryObj);
+
 
         db.channel.count(queryObj, function (err, res) {
           db.channel.find(queryObj).sort({
@@ -145,7 +156,7 @@ module.exports = {
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().integer().description('defaults to 0'),
         user_id: Joi.string().required().description('id of user'),
-        activity_type: Joi.string().description('list of activities, separated by comma'),
+        activity_type: Joi.string().required().description('list of activities, separated by comma'),
         last_sync: Joi.string().description('last sync')
       }
     }
