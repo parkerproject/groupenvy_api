@@ -76,7 +76,7 @@ module.exports = {
         activity_message: Joi.string().required().description('activity message'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
         target_user_id: Joi.string().description('user id of person'),
-        picture_id: Joi.string().required().description('picture id of the user'),
+        picture_id: Joi.string().description('picture id of the user'),
         date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
       }
     }
@@ -111,8 +111,9 @@ module.exports = {
         }
 
         if (request.query.last_sync) {
+          console.log(decodeURIComponent(request.query.last_sync));
           queryObj.last_sync = {
-            $gt: new Date(decodeURIComponent(request.query.last_sync))
+            $gte: new Date(decodeURIComponent(request.query.last_sync))
           };
         }
 
