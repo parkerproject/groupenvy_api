@@ -111,7 +111,7 @@ module.exports = {
         type_id: Joi.string().required().description('id of group or event, e.g group_id or event_id'),
         type: Joi.string().required().description('type should be either "group" or "event"'),
         user_id: Joi.string().required().description('id of the user'),
-        picture_id: Joi.string().required().description('picture id of the user'),
+        picture_id: Joi.string().description('picture id of the user'),
         name: Joi.string().required().description('name of the user')
       }
     }
