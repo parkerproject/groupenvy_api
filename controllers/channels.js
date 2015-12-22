@@ -42,7 +42,7 @@ module.exports = {
       activity.activity_id = payload.activity_id;
       activity.activity_type = payload.activity_type;
       activity.activity_message = payload.activity_message;
-      activity.user_id = payload.user_id;
+      activity.user_id = payload.user_id.split(',');
       activity.picture_id = payload.picture_id;
       activity.date_created = payload.date_created;
 
@@ -74,7 +74,7 @@ module.exports = {
         activity_id: Joi.string().required().description('id of activity'),
         activity_type: Joi.string().required().description('type of activity, e.g group, event, follow, etc.'),
         activity_message: Joi.string().required().description('activity message'),
-        user_id: Joi.string().required().description('user id of person that triggered the activity'),
+        user_id: Joi.string().required().description('user id of person(s) that triggered the activity, if more than one, separate by comma'),
         target_user_id: Joi.string().description('user id of person'),
         picture_id: Joi.string().description('picture id of the user'),
         date_created: Joi.string().required().description('date activity was created in ISO string format(2015-10-26T14:46:34.899Z)')
@@ -93,7 +93,7 @@ module.exports = {
       var skip = request.query.offset || 0;
       var limit = request.query.limit || 20;
       var queryObj = {},
-        activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined'],
+        activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment'],
         caseTwo = ['follow', 'group_invite', 'event_invite'];
 
       if (request.query.activity_type) {
@@ -121,13 +121,10 @@ module.exports = {
 
 
         if (request.query.last_sync) {
-          console.log(decodeURIComponent(request.query.last_sync));
           queryObj.last_sync = {
             $gte: new Date(decodeURIComponent(request.query.last_sync))
           };
         }
-
-        console.log(queryObj);
 
 
         db.channel.count(queryObj, function (err, res) {
