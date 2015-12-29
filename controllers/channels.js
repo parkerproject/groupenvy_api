@@ -94,7 +94,7 @@ module.exports = {
       var limit = request.query.limit || 20;
       var queryObj = {},
         activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment'],
-        caseTwo = ['follow', 'group_invite', 'event_invite'];
+        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply'];
 
       if (request.query.activity_type) {
         activityStr = request.query.activity_type;
@@ -115,9 +115,10 @@ module.exports = {
         }
 
         if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
+          console.log('two');
           queryObj.user_id = request.query.user_id;
         }
-
+        console.log(queryObj);
 
 
         if (request.query.last_sync) {
