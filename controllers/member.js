@@ -51,6 +51,8 @@ module.exports = {
             event_id: {
               $in: filterIds
             }
+          }).sort({
+            event_date: 1
           }).skip(skip).limit(limit, function (err, results) {
             resolve(results);
           });

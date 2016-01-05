@@ -60,7 +60,7 @@ module.exports = {
         offset: Joi.number().integer().description('defaults to 0'),
         creator_id: Joi.string().description('id of the creator, to filter events created user'),
         event_status: Joi.string().description('event status should be public or private (defaults to public)'),
-        geo: Joi.string().required().description('geo location of event, format should be geo=longitude,latitude')
+        geo: Joi.string().description('geo location of event, format should be geo=longitude,latitude')
       }
     },
 
