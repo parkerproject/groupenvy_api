@@ -39,6 +39,7 @@ module.exports = {
           }).type('application/json ');
         } else {
           _event.event_id = randtoken.generate(10);
+          delete _event.key;
           db.events.save(_event, function (err, result) {
             if (result) {
               reply({

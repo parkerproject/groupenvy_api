@@ -30,6 +30,7 @@ module.exports = {
           }).type('application/json ');
         } else {
           group.group_id = randtoken.generate(10);
+          delete group.key;
           db.groups.save(group, function (err, result) {
             if (result) {
               reply({
