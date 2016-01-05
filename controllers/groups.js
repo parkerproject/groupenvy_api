@@ -27,9 +27,13 @@ module.exports = {
       //default
       groupObject.group_status = request.query.group_status || 'public';
 
-      db.groups.find(groupObject).skip(skip).limit(limit, function (err, results) {
-        reply(results);
+      db.groups.count(function (error, nbDocs) {
+        db.groups.find(groupObject).skip(Math.random() * nbDocs).limit(limit, function (err, results) {
+          reply(results);
+        });
       });
+
+
     },
     description: 'Get Groups',
     notes: 'Returns list of groups',

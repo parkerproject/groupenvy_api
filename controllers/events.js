@@ -26,8 +26,24 @@ module.exports = {
 
       eventsObj.event_status = request.query.event_status || 'public';
 
+      if (request.query.geo) {
+        var lng = request.query.geo.split(',')[0];
+        var lat = request.query.geo.split(',')[1];
+
+        eventsObj.loc = {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat]
+            },
+            $maxDistance: 8046.72 // 5 miles = roughly 8046.72meteres
+          }
+        };
+
+      }
+
       db.events.find(eventsObj).sort({
-        date_created: 1
+        event_date: 1
       }).skip(skip).limit(limit, function (err, results) {
         reply(results);
       });
@@ -43,7 +59,8 @@ module.exports = {
         limit: Joi.number().integer().min(1).default(20).description('defaults to 20'),
         offset: Joi.number().integer().description('defaults to 0'),
         creator_id: Joi.string().description('id of the creator, to filter events created user'),
-        event_status: Joi.string().description('event status should be public or private (defaults to public)')
+        event_status: Joi.string().description('event status should be public or private (defaults to public)'),
+        geo: Joi.string().required().description('geo location of event, format should be geo=longitude,latitude')
       }
     },
 
