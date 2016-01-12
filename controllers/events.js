@@ -34,9 +34,8 @@ module.exports = {
           $near: {
             $geometry: {
               type: "Point",
-              coordinates: [lng, lat]
-            },
-            $maxDistance: 8046.72 // 5 miles = roughly 8046.72meteres
+              coordinates: [Number(lng), Number(lat)]
+            }
           }
         };
 
