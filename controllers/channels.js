@@ -82,6 +82,53 @@ module.exports = {
     }
 
   },
+  delete: {
+    handler: function (request, reply) {
+      "use strict";
+      var payload = request.payload;
+
+      if (!payload.key || payload.key !== process.env.API_KEY) {
+        reply('You are not authorized');
+      }
+
+      var activity = {};
+      activity.activity_id = payload.activity_id;
+      activity.activity_type = payload.activity_type;
+      activity.user_id = payload.user_id;
+
+      if (payload.target_user_id) {
+        activity.target_user_id = payload.target_user_id;
+      }
+
+
+
+      db.channel.remove(activity, function (err, result) {
+        if (result) {
+          reply({
+            status: 1,
+            message: 'message deleted'
+          });
+        }
+
+      });
+
+    },
+
+    description: 'Delete a groupfeed activity',
+    notes: 'Delete a groupfeed activity',
+    tags: ['api'],
+
+    validate: {
+      payload: {
+        key: Joi.string().required().description('API key to access data'),
+        activity_id: Joi.string().required().description('id of activity'),
+        activity_type: Joi.string().required().description('type of activity, e.g group, event, follow, etc.'),
+        user_id: Joi.string().required().description('user id of person that triggered the activity'),
+        target_user_id: Joi.string().description('user id of person'),
+      }
+    }
+
+  },
 
   index: {
     handler: function (request, reply) {

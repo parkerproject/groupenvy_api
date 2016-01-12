@@ -86,6 +86,10 @@ module.exports = function (server) {
     path: '/api/channel',
     config: controller.channels.index
   }, {
+    method: 'DELETE',
+    path: '/api/channel/delete',
+    config: controller.channels.delete
+  }, {
     method: 'POST',
     path: '/api/comment/create',
     config: controller.comment.create
