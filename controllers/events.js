@@ -38,8 +38,11 @@ module.exports = {
             }
           }
         };
-
       }
+
+      eventsObj.end_date = {
+        $gte: new Date().toISOString()
+      };
 
       db.events.find(eventsObj).sort({
         event_date: 1
