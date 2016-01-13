@@ -92,7 +92,9 @@ module.exports = {
       }
 
       var activity = {};
-      activity.activity_id = payload.activity_id;
+      if (payload.activity_id) {
+        activity.activity_id = payload.activity_id;
+      }
       activity.activity_type = payload.activity_type;
       activity.user_id = payload.user_id;
 
@@ -121,7 +123,7 @@ module.exports = {
     validate: {
       payload: {
         key: Joi.string().required().description('API key to access data'),
-        activity_id: Joi.string().required().description('id of activity'),
+        activity_id: Joi.string().description('id of activity'),
         activity_type: Joi.string().required().description('type of activity, e.g group, event, follow, etc.'),
         user_id: Joi.string().required().description('user id of person that triggered the activity'),
         target_user_id: Joi.string().description('user id of person'),
