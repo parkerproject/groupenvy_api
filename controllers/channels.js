@@ -1,66 +1,64 @@
-require('dotenv').load();
-var Joi = require('joi');
-var collections = ['members', 'groups', 'events', 'channel'];
-var mongojs = require("mongojs");
-var db = mongojs.connect(process.env.MONGODB_URL, collections);
-var Promise = require('es6-promise').Promise;
-var Kaiseki = require('kaiseki');
-var kaiseki = new Kaiseki(process.env.PARSE_APP_ID, process.env.PARSE_REST_API_KEY);
-var lodash = require('lodash');
+require('dotenv').load()
+var Joi = require('joi')
+var collections = ['members', 'groups', 'events', 'channel']
+var mongojs = require('mongojs')
+var db = mongojs.connect(process.env.MONGODB_URL, collections)
+var Promise = require('es6-promise').Promise
+var Kaiseki = require('kaiseki')
+var kaiseki = new Kaiseki(process.env.PARSE_APP_ID, process.env.PARSE_REST_API_KEY)
+var lodash = require('lodash')
 
 function getUsers(user_id, cb) {
   var params = {
     where: {
-      "$relatedTo": {
-        "object": {
-          "__type": "Pointer",
-          "objectId": user_id,
-          "className": "_User"
+      '$relatedTo': {
+        'object': {
+          '__type': 'Pointer',
+          'objectId': user_id,
+          'className': '_User'
         },
-        "key": "following"
+        'key': 'following'
       },
-      //objectId: 'He8hQies9q'
+      // objectId: 'He8hQies9q'
     }
-  };
+  }
 
   kaiseki.getUsers(params, function (err, res, body, success) {
-    cb(body);
-  });
+    cb(body)
+  })
 }
 
 module.exports = {
   event: {
     handler: function (request, reply) {
-      "use strict";
-      var payload = request.payload;
+      'use strict'
+      var payload = request.payload
 
       if (!payload.key || payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var activity = {};
-      activity.activity_id = payload.activity_id;
-      activity.activity_type = payload.activity_type;
-      activity.activity_message = payload.activity_message;
-      activity.user_id = payload.user_id.split(',');
-      activity.picture_id = payload.picture_id;
-      activity.date_created = payload.date_created;
+      var activity = {}
+      activity.activity_id = payload.activity_id
+      activity.activity_type = payload.activity_type
+      activity.activity_message = payload.activity_message
+      activity.user_id = payload.user_id.split(',')
+      activity.picture_id = payload.picture_id
+      activity.date_created = payload.date_created
 
       if (payload.target_user_id) {
-        activity.target_user_id = payload.target_user_id;
+        activity.target_user_id = payload.target_user_id
       }
-
-
 
       db.channel.save(activity, function (err, result) {
         if (result) {
           reply({
             status: 1,
             message: 'message pushed'
-          });
+          })
         }
 
-      });
+      })
 
     },
 
@@ -84,35 +82,33 @@ module.exports = {
   },
   delete: {
     handler: function (request, reply) {
-      "use strict";
-      var payload = request.payload;
+      'use strict'
+      var payload = request.payload
 
       if (!payload.key || payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var activity = {};
+      var activity = {}
       if (payload.activity_id) {
-        activity.activity_id = payload.activity_id;
+        activity.activity_id = payload.activity_id
       }
-      activity.activity_type = payload.activity_type;
-      activity.user_id = payload.user_id;
+      activity.activity_type = payload.activity_type
+      activity.user_id = payload.user_id
 
       if (payload.target_user_id) {
-        activity.target_user_id = payload.target_user_id;
+        activity.target_user_id = payload.target_user_id
       }
-
-
 
       db.channel.remove(activity, function (err, result) {
         if (result) {
           reply({
             status: 1,
             message: 'message deleted'
-          });
+          })
         }
 
-      });
+      })
 
     },
 
@@ -134,48 +130,45 @@ module.exports = {
 
   index: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
-      var skip = request.query.offset || 0;
-      var limit = request.query.limit || 20;
+      var skip = request.query.offset || 0
+      var limit = request.query.limit || 20
       var queryObj = {},
         activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment'],
-        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply'];
+        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply']
 
       if (request.query.activity_type) {
-        activityStr = request.query.activity_type;
-        activityArr = activityStr.split(',');
+        activityStr = request.query.activity_type
+        activityArr = activityStr.split(',')
 
         queryObj.activity_type = {
           $in: activityArr
-        };
+        }
       }
 
       getUsers(request.query.user_id, function (users) {
-        var user_ids = lodash.pluck(users, 'objectId');
+        var user_ids = lodash.pluck(users, 'objectId')
 
         if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
           queryObj.user_id = {
             $in: user_ids
-          };
+          }
         }
 
         if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
-          console.log('two');
-          queryObj.user_id = request.query.user_id;
+          console.log('two')
+          queryObj.user_id = request.query.user_id
         }
-        console.log(queryObj);
-
+        console.log(queryObj)
 
         if (request.query.last_sync) {
           queryObj.last_sync = {
             $gte: new Date(decodeURIComponent(request.query.last_sync))
-          };
+          }
         }
-
 
         db.channel.count(queryObj, function (err, res) {
           db.channel.find(queryObj).sort({
@@ -184,12 +177,12 @@ module.exports = {
             reply({
               activities: results,
               total_amount: res
-            });
-          });
+            })
+          })
 
-        });
+        })
 
-      });
+      })
 
     },
 
@@ -210,4 +203,4 @@ module.exports = {
 
   }
 
-};
+}

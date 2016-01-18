@@ -29,6 +29,7 @@ module.exports = {
       if (request.query.geo) {
         var lng = request.query.geo.split(',')[0];
         var lat = request.query.geo.split(',')[1];
+        console.log(lng, lat);
 
         eventsObj.loc = {
           $near: {
@@ -43,6 +44,7 @@ module.exports = {
       eventsObj.end_date = {
         $gte: new Date().toISOString()
       };
+
 
       db.events.find(eventsObj).sort({
         event_date: 1

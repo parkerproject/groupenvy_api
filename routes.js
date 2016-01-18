@@ -1,8 +1,7 @@
-var requireDirectory = require('require-directory');
+var requireDirectory = require('require-directory')
 
 module.exports = function (server) {
-
-  var controller = requireDirectory(module, './controllers');
+  var controller = requireDirectory(module, './controllers')
 
   // Array of routes for Hapi
   var routeTable = [{
@@ -117,6 +116,10 @@ module.exports = function (server) {
     method: 'GET',
     path: '/api/groups/search',
     config: controller.searchGroups.index
-  }];
-  return routeTable;
-};
+  }, {
+    method: 'GET',
+    path: '/api/follow',
+    config: controller.follow.index
+  }]
+  return routeTable
+}
