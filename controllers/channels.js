@@ -10,16 +10,18 @@ var lodash = require('lodash')
 
 function getUsers(user_id, cb) {
   var params = {
+    // where: {
+    //   '$relatedTo': {
+    //     'object': {
+    //       '__type': 'Pointer',
+    //       'objectId': user_id,
+    //       'className': '_User'
+    //     },
+    //     'key': 'following'
+    //   },
+    // }
     where: {
-      '$relatedTo': {
-        'object': {
-          '__type': 'Pointer',
-          'objectId': user_id,
-          'className': '_User'
-        },
-        'key': 'following'
-      },
-      // objectId: 'He8hQies9q'
+      'fromId': user_id
     }
   }
 
@@ -159,10 +161,8 @@ module.exports = {
         }
 
         if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
-          console.log('two')
           queryObj.user_id = request.query.user_id
         }
-        console.log(queryObj)
 
         if (request.query.last_sync) {
           queryObj.last_sync = {
