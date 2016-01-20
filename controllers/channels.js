@@ -21,11 +21,15 @@ function getUsers(user_id, cb) {
     //   },
     // }
     where: {
-      'fromId': user_id
+      'fromId': encodeURIComponent(user_id)
     }
   }
 
-  kaiseki.getUsers(params, function (err, res, body, success) {
+  // kaiseki.getUsers(params, function (err, res, body, success) {
+  //   cb(body)
+  // })
+
+  kaiseki.getObjects('Follow', params, function (err, res, body, success) {
     cb(body)
   })
 }
@@ -153,6 +157,8 @@ module.exports = {
 
       getUsers(request.query.user_id, function (users) {
         var user_ids = lodash.pluck(users, 'objectId')
+        var dates = lodash.pluck(users, 'createdAt'),
+          maxDate
 
         if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
           queryObj.user_id = {
@@ -168,6 +174,18 @@ module.exports = {
           queryObj.last_sync = {
             $gte: new Date(decodeURIComponent(request.query.last_sync))
           }
+        }
+
+        dates = dates.map(function (date) {
+          return new Date(date).getTime()
+        })
+
+        maxDate = new Date(lodash.max(dates)).toISOString()
+
+
+
+        queryObj.date_created = {
+          $gte: maxDate
         }
 
         db.channel.count(queryObj, function (err, res) {
