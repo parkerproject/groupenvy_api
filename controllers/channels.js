@@ -21,7 +21,7 @@ function getUsers(user_id, cb) {
     //   },
     // }
     where: {
-      'fromId': encodeURIComponent(user_id)
+      'toId': encodeURIComponent(user_id)
     }
   }
 
@@ -176,16 +176,16 @@ module.exports = {
           }
         }
 
-        dates = dates.map(function (date) {
-          return new Date(date).getTime()
-        })
+        if (dates.length !== 0) {
+          dates = dates.map(function (date) {
+            return new Date(date).getTime()
+          })
 
-        maxDate = new Date(lodash.max(dates)).toISOString()
+          maxDate = new Date(lodash.max(dates)).toISOString()
 
-
-
-        queryObj.date_created = {
-          $gte: maxDate
+          queryObj.date_created = {
+            $gte: maxDate
+          }
         }
 
         db.channel.count(queryObj, function (err, res) {
