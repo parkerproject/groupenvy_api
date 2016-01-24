@@ -8,30 +8,58 @@ var Kaiseki = require('kaiseki')
 var kaiseki = new Kaiseki(process.env.PARSE_APP_ID, process.env.PARSE_REST_API_KEY)
 var lodash = require('lodash')
 
-function getUsers(user_id, cb) {
+function onlyFollowFn(user_id, cb) {
   var params = {
-    // where: {
-    //   '$relatedTo': {
-    //     'object': {
-    //       '__type': 'Pointer',
-    //       'objectId': user_id,
-    //       'className': '_User'
-    //     },
-    //     'key': 'following'
-    //   },
-    // }
     where: {
-      'toId': encodeURIComponent(user_id)
+      'toId': user_id
     }
   }
-
-  // kaiseki.getUsers(params, function (err, res, body, success) {
-  //   cb(body)
-  // })
 
   kaiseki.getObjects('Follow', params, function (err, res, body, success) {
     cb(body)
   })
+}
+
+function caseOneFn(user_id, cb) {
+  var params = {
+    where: {
+      '$relatedTo': {
+        'object': {
+          '__type': 'Pointer',
+          'objectId': user_id,
+          'className': '_User'
+        },
+        'key': 'following'
+      },
+    }
+
+  }
+
+  kaiseki.getUsers(params, function (err, res, body, success) {
+    cb(body)
+  })
+
+}
+
+function sendJson(db, reply, skip, limit, request, queryObj) {
+  if (request.query.last_sync) {
+    queryObj.last_sync = {
+      $gte: new Date(decodeURIComponent(request.query.last_sync))
+    }
+  }
+
+  db.channel.count(queryObj, function (err, res) {
+    db.channel.find(queryObj).sort({
+      date_created: -1
+    }).skip(skip).limit(limit, function (err, results) {
+      reply({
+        activities: results,
+        total_amount: res
+      })
+    })
+
+  })
+
 }
 
 module.exports = {
@@ -144,7 +172,9 @@ module.exports = {
       var limit = request.query.limit || 20
       var queryObj = {},
         activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment'],
-        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply']
+        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply'],
+        onlyFollow = ['follow'],
+        user_ids, dates, maxDate
 
       if (request.query.activity_type) {
         activityStr = request.query.activity_type
@@ -155,52 +185,52 @@ module.exports = {
         }
       }
 
-      getUsers(request.query.user_id, function (users) {
-        var user_ids = lodash.pluck(users, 'objectId')
-        var dates = lodash.pluck(users, 'createdAt'),
-          maxDate
+      if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
+        console.log(1)
+        caseOneFn(request.query.user_id, function (users) {
+          user_ids = lodash.pluck(users, 'objectId')
 
-        if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
           queryObj.user_id = {
             $in: user_ids
           }
-        }
 
-        if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
-          queryObj.user_id = request.query.user_id
-        }
+          sendJson(db, reply, skip, limit, request, queryObj)
+        })
+      } else if (lodash.isEqual(activityArr.sort(), onlyFollow.sort())) {
+        console.log(3)
 
-        if (request.query.last_sync) {
-          queryObj.last_sync = {
-            $gte: new Date(decodeURIComponent(request.query.last_sync))
+        onlyFollowFn(request.query.user_id, function (users) {
+          user_ids = lodash.pluck(users, 'objectId')
+          dates = lodash.pluck(users, 'createdAt')
+
+          queryObj.user_id = {
+            $in: user_ids
           }
-        }
 
-        if (dates.length !== 0) {
-          dates = dates.map(function (date) {
-            return new Date(date).getTime()
-          })
-
-          maxDate = new Date(lodash.max(dates)).toISOString()
-
-          queryObj.date_created = {
-            $gte: maxDate
-          }
-        }
-
-        db.channel.count(queryObj, function (err, res) {
-          db.channel.find(queryObj).sort({
-            date_created: -1
-          }).skip(skip).limit(limit, function (err, results) {
-            reply({
-              activities: results,
-              total_amount: res
+          if (dates.length !== 0) {
+            dates = dates.map(function (date) {
+              return new Date(date).getTime()
             })
-          })
+
+            maxDate = new Date(lodash.max(dates)).toISOString()
+
+            queryObj.date_created = {
+              $gte: maxDate
+            }
+          }
+
+          sendJson(db, reply, skip, limit, request, queryObj)
 
         })
 
-      })
+      } else if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
+        console.log(2)
+        queryObj.user_id = request.query.user_id
+        sendJson(db, reply, skip, limit, request, queryObj)
+      } else {
+        console.log(4)
+        sendJson(db, reply, skip, limit, request, queryObj)
+      }
 
     },
 
