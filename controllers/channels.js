@@ -8,7 +8,7 @@ var Kaiseki = require('kaiseki')
 var kaiseki = new Kaiseki(process.env.PARSE_APP_ID, process.env.PARSE_REST_API_KEY)
 var lodash = require('lodash')
 
-function onlyFollowFn(user_id, cb) {
+function caseOneFn(user_id, cb) {
   var params = {
     where: {
       'toId': user_id
@@ -20,26 +20,26 @@ function onlyFollowFn(user_id, cb) {
   })
 }
 
-function caseOneFn(user_id, cb) {
-  var params = {
-    where: {
-      '$relatedTo': {
-        'object': {
-          '__type': 'Pointer',
-          'objectId': user_id,
-          'className': '_User'
-        },
-        'key': 'following'
-      },
-    }
-
-  }
-
-  kaiseki.getUsers(params, function (err, res, body, success) {
-    cb(body)
-  })
-
-}
+// function caseOneFn(user_id, cb) {
+//   var params = {
+//     where: {
+//       '$relatedTo': {
+//         'object': {
+//           '__type': 'Pointer',
+//           'objectId': user_id,
+//           'className': '_User'
+//         },
+//         'key': 'following'
+//       },
+//     }
+//
+//   }
+//
+//   kaiseki.getUsers(params, function (err, res, body, success) {
+//     cb(body)
+//   })
+//
+// }
 
 function sendJson(db, reply, skip, limit, request, queryObj) {
   if (request.query.last_sync) {
@@ -170,11 +170,15 @@ module.exports = {
       }
       var skip = request.query.offset || 0
       var limit = request.query.limit || 20
-      var queryObj = {},
-        activityArr, activityStr, caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment'],
-        caseTwo = ['follow', 'group_invite', 'event_invite', 'reply'],
-        onlyFollow = ['follow'],
-        user_ids, dates, maxDate
+      var queryObj = {}
+      var activityArr
+      var activityStr
+      var caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment']
+      var caseTwo = ['follow', 'group_invite', 'event_invite', 'reply']
+      var users = []
+      var user_ids
+      var dates
+      var maxDate
 
       if (request.query.activity_type) {
         activityStr = request.query.activity_type
@@ -186,9 +190,8 @@ module.exports = {
       }
 
       if (lodash.isEqual(activityArr.sort(), caseOne.sort())) {
-        console.log(1)
         caseOneFn(request.query.user_id, function (users) {
-          user_ids = lodash.pluck(users, 'objectId')
+          user_ids = lodash.pluck(users, 'fromId')
 
           queryObj.user_id = {
             $in: user_ids
@@ -196,42 +199,13 @@ module.exports = {
 
           sendJson(db, reply, skip, limit, request, queryObj)
         })
-      } else if (lodash.isEqual(activityArr.sort(), onlyFollow.sort())) {
-        console.log(3)
-
-        onlyFollowFn(request.query.user_id, function (users) {
-          user_ids = lodash.pluck(users, 'objectId')
-          dates = lodash.pluck(users, 'createdAt')
-
-          queryObj.user_id = {
-            $in: user_ids
-          }
-
-          if (dates.length !== 0) {
-            dates = dates.map(function (date) {
-              return new Date(date).getTime()
-            })
-
-            maxDate = new Date(lodash.max(dates)).toISOString()
-
-            queryObj.date_created = {
-              $gte: maxDate
-            }
-          }
-
-          sendJson(db, reply, skip, limit, request, queryObj)
-
-        })
-
-      } else if (lodash.isEqual(activityArr.sort(), caseTwo.sort())) {
-        console.log(2)
-        queryObj.user_id = request.query.user_id
-        sendJson(db, reply, skip, limit, request, queryObj)
       } else {
-        console.log(4)
+        users.push(request.query.user_id)
+        queryObj.user_id = {
+          $in: users
+        }
         sendJson(db, reply, skip, limit, request, queryObj)
       }
-
     },
 
     description: 'Get Groupfeed activities',
