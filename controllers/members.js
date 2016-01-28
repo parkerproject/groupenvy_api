@@ -159,6 +159,7 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         user_id: Joi.string().required().description('id of the user'),
         picture_id: Joi.string().description('picture id of the user'),
+        old_picture_id: Joi.string().description('old picture id of the user')
         name: Joi.string().description('name of the user')
       }
     }
