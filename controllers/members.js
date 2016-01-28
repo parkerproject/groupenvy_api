@@ -1,52 +1,48 @@
-require('dotenv').load();
-var collections = ['members'];
-var mongojs = require("mongojs");
-var db = mongojs.connect(process.env.MONGODB_URL, collections);
-var Joi = require('joi');
-var _ = require('lodash');
-var Promise = require('es6-promise').Promise;
-
+require('dotenv').load()
+var collections = ['members']
+var mongojs = require('mongojs')
+var db = mongojs.connect(process.env.MONGODB_URL, collections)
+var Joi = require('joi')
+var _ = require('lodash')
+var Promise = require('es6-promise').Promise
 
 module.exports = {
-
   index: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
-      var skip = request.query.offset || 0;
-      var limit = request.query.limit || 20;
-      var user = {};
-      var count, data;
+      var skip = request.query.offset || 0
+      var limit = request.query.limit || 20
+      var user = {}
+      var count, data
 
       if (request.query.user_id) {
-        user.user_id = request.query.user_id;
+        user.user_id = request.query.user_id
       }
-      user.type_id = request.query.type_id;
+      user.type_id = request.query.type_id
 
       new Promise(function (resolve) {
         db.members.count(user, function (err, res) {
-          count = res;
-          resolve(count);
-        });
+          count = res
+          resolve(count)
+        })
       }).then(function (res) {
         return new Promise(function (resolve) {
           db.members.find(user).sort({
             '_id': -1
           }).skip(skip).limit(limit, function (err, results) {
-            data = results;
-            resolve(data);
-          });
-        });
+            data = results
+            resolve(data)
+          })
+        })
       }).then(function (res) {
-
         reply({
           results: data,
           attenders_amount: count
-        });
-      });
+        })
+      })
     },
     description: 'Get members of a group or event',
     notes: 'Returns members of a group or event, checks if a user is in a group or event',
@@ -66,10 +62,9 @@ module.exports = {
 
   add: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
       var user = {
@@ -78,28 +73,27 @@ module.exports = {
         name: request.payload.name,
         type: request.payload.type,
         type_id: request.payload.type_id
-      };
+      }
 
       db.members.find({
         user_id: request.payload.user_id,
         type_id: request.payload.type_id
       }).limit(1, function (err, result) {
-
         if (result.length === 0) {
           db.members.save(user, function () {
             reply({
               status: 1,
               message: 'User has been added'
-            });
-          });
+            })
+          })
         } else {
           reply({
             status: 0,
             message: 'Already a member'
-          });
+          })
         }
 
-      });
+      })
     },
     description: 'Add member to group or event',
     notes: 'This will add a member to a group or an event',
@@ -120,22 +114,20 @@ module.exports = {
 
   update: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var user = {};
+      var user = {}
 
       if (request.payload.picture_id) {
-        user.picture_id = request.payload.picture_id;
+        user.picture_id = request.payload.picture_id
       }
 
       if (request.payload.name) {
-        user.name = request.payload.name;
+        user.name = request.payload.name
       }
-
 
       db.members.update({
         user_id: request.payload.user_id
@@ -147,11 +139,11 @@ module.exports = {
         reply({
           status: 1,
           message: 'User has been updated'
-        });
-      });
+        })
+      })
     },
     description: 'Update a member in all groups and events',
-    notes: 'This will update a member\'s info in all groups and events',
+    notes: "This will update a member's info in all groups and events",
     tags: ['api'],
 
     validate: {
@@ -159,7 +151,7 @@ module.exports = {
         key: Joi.string().required().description('API key to access data'),
         user_id: Joi.string().required().description('id of the user'),
         picture_id: Joi.string().description('picture id of the user'),
-        old_picture_id: Joi.string().description('old picture id of the user')
+        old_picture_id: Joi.string().description('old picture id of the user'),
         name: Joi.string().description('name of the user')
       }
     }
@@ -168,24 +160,22 @@ module.exports = {
 
   remove: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
       var user = {
         user_id: request.payload.user_id,
         type_id: request.payload.type_id
-      };
+      }
 
       db.members.remove(user, function () {
         reply({
           status: 1,
           message: 'User has been removed'
-        });
-      });
-
+        })
+      })
 
     },
     description: 'Remove member from group or event',
@@ -202,5 +192,4 @@ module.exports = {
 
   }
 
-
-};
+}
