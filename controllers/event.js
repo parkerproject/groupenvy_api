@@ -1,57 +1,53 @@
-require('dotenv').load();
-var collections = ['events', 'members'];
-var mongojs = require("mongojs");
-var db = mongojs.connect(process.env.MONGODB_URL, collections);
-var Joi = require('joi');
-var _ = require('lodash');
-var randtoken = require('rand-token');
-
+require('dotenv').load()
+var collections = ['events', 'members']
+var mongojs = require('mongojs')
+var db = mongojs.connect(process.env.MONGODB_URL, collections)
+var Joi = require('joi')
+var _ = require('lodash')
+var randtoken = require('rand-token')
 
 module.exports = {
   create: {
     handler: function (request, reply) {
-
-      "use strict";
-      var _event = request.payload;
+      'use strict'
+      var _event = request.payload
       if (!_event.key || _event.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
       if (request.payload.geo) {
-        var geo = _event.geo.split(',');
+        var geo = _event.geo.split(',')
         _event.loc = {
-          type: "Point",
+          type: 'Point',
           coordinates: [Number(geo[0]), Number(geo[1])]
-        };
+        }
       }
 
-      var name = (_event.name) ? _event.name : "";
-
+      var name = (_event.name) ? _event.name : ''
 
       db.events.find({
         name: name
       }).limit(1, function (err, docs) {
-
         if (docs.length !== 0) {
           reply({
             status: 0,
             message: 'An event with that name already exists'
-          }).type('application/json ');
+          }).type('application/json ')
         } else {
-          _event.event_id = randtoken.generate(10);
-          delete _event.key;
+          _event.event_id = randtoken.generate(10)
+          delete _event.key
           db.events.save(_event, function (err, result) {
             if (result) {
               reply({
                 status: 1,
                 message: 'Your new event has been created',
                 event_id: _event.event_id
-              }).type('application/json');
+              }).type('application/json')
             }
-          });
+          })
         }
 
-      });
+      })
     },
 
     description: 'Create Event',
@@ -67,12 +63,12 @@ module.exports = {
         creator_id: Joi.string().required().description('id of event creator'),
         creator_picture: Joi.string().description('picture of creator'),
         creator_name: Joi.string().required().description('name of event creator'),
-        date_created: Joi.string().required().description('date that event was created'),
+        date_created: Joi.string().description('date that event was created'),
         location: Joi.string().required().description('event location'),
         geo: Joi.string().required().description('geo location of event, format should be geo=longitude,latitude'),
         event_date: Joi.string().required().description('event date'),
-        end_date: Joi.string().required().description('event end date'),
-        description: Joi.string().required().description('event description')
+        end_date: Joi.string().description('event end date'),
+        description: Joi.string().description('event description')
       }
     }
 
@@ -80,21 +76,20 @@ module.exports = {
 
   get: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var eventObject = {};
+      var eventObject = {}
 
       if (request.query.event_id) {
-        eventObject.event_id = request.query.event_id;
+        eventObject.event_id = request.query.event_id
       }
 
       db.events.find(eventObject).limit(1, function (err, results) {
-        reply(results);
-      });
+        reply(results)
+      })
     },
     description: 'Get event',
     notes: 'Returns an event, you can find all info about this event, e.g members',
@@ -111,48 +106,47 @@ module.exports = {
 
   put: {
     handler: function (request, reply) {
-
-      "use strict";
-      var payload = request.payload;
-      var eventObj = {};
+      'use strict'
+      var payload = request.payload
+      var eventObj = {}
       if (!payload.key || payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
       if (payload.geo) {
-        var geo = payload.geo.split(',');
+        var geo = payload.geo.split(',')
         eventObj.loc = {
-          type: "Point",
+          type: 'Point',
           coordinates: [Number(geo[0]), Number(geo[1])]
-        };
+        }
       }
 
       if (payload.name) {
-        eventObj.name = payload.name;
+        eventObj.name = payload.name
       }
 
       if (payload.description) {
-        eventObj.description = payload.description;
+        eventObj.description = payload.description
       }
 
       if (payload.picture_id) {
-        eventObj.picture_id = payload.picture_id;
+        eventObj.picture_id = payload.picture_id
       }
 
       if (payload.location) {
-        eventObj.location = payload.location;
+        eventObj.location = payload.location
       }
 
       if (payload.event_date) {
-        eventObj.event_date = payload.event_date;
+        eventObj.event_date = payload.event_date
       }
 
       if (payload.end_date) {
-        eventObj.end_date = payload.end_date;
+        eventObj.end_date = payload.end_date
       }
 
       if (payload.event_status) {
-        eventObj.event_status = payload.event_status;
+        eventObj.event_status = payload.event_status
       }
 
       db.events.findAndModify({
@@ -169,8 +163,8 @@ module.exports = {
           status: 1,
           message: 'Your event has been updated',
           event_id: payload.event_id
-        }).type('application/json');
-      });
+        }).type('application/json')
+      })
 
     },
 
@@ -198,19 +192,16 @@ module.exports = {
 
   delete: {
     handler: function (request, reply) {
-
-      "use strict";
-      var payload = request.payload;
+      'use strict'
+      var payload = request.payload
       if (!payload.key || payload.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
-
-
 
       var eventObj = {
         event_id: payload.event_id,
         creator_id: payload.creator_id
-      };
+      }
 
       db.events.remove(eventObj, function () {
         db.members.remove({
@@ -220,9 +211,9 @@ module.exports = {
             status: 1,
             message: 'Your event has been deleted',
             event_id: payload.event_id
-          }).type('application/json');
-        });
-      });
+          }).type('application/json')
+        })
+      })
 
     },
 
@@ -240,4 +231,4 @@ module.exports = {
 
   }
 
-};
+}
