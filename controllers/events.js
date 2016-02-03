@@ -1,56 +1,74 @@
-require('dotenv').load();
-var collections = ['events'];
-var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
-var Joi = require('joi');
-var _ = require('lodash');
-var server = require('../server');
-
+require('dotenv').load()
+var collections = ['events']
+var db = require('mongojs').connect(process.env.MONGODB_URL, collections)
+var Joi = require('joi')
+var _ = require('lodash')
+var server = require('../server')
 
 module.exports = {
   index: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var eventsObj = {};
+      // var eventsObj = {}
 
-      var skip = request.query.offset || 0;
-      var limit = request.query.limit || 20;
+      var endDateNotAvail = {
+        end_date: {
+          $exists: false
+        }
+      }
+
+      var endDateAvail = {
+        end_date: {
+          $gte: new Date().toISOString()
+        }
+      }
+
+      var eventsObj = {
+        $or: [endDateNotAvail, endDateAvail]
+      }
+
+      var skip = request.query.offset || 0
+      var limit = request.query.limit || 20
+      var count = 0
 
       if (request.query.creator_id) {
-        eventsObj.creator_id = request.query.creator_id;
+        eventsObj.creator_id = request.query.creator_id
       }
 
-      eventsObj.event_status = request.query.event_status || 'public';
+      eventsObj.event_status = request.query.event_status || 'public'
 
       if (request.query.geo) {
-        var lng = request.query.geo.split(',')[0];
-        var lat = request.query.geo.split(',')[1];
-        console.log(lng, lat);
+        var lng = request.query.geo.split(',')[0]
+        var lat = request.query.geo.split(',')[1]
 
         eventsObj.loc = {
           $near: {
             $geometry: {
-              type: "Point",
+              type: 'Point',
               coordinates: [Number(lng), Number(lat)]
             }
           }
-        };
+        }
       }
 
-      eventsObj.end_date = {
-        $gte: new Date().toISOString()
-      };
 
+      db.events.count(eventsObj, function (err, res) {
+        count = res
+        db.events.find(eventsObj).sort({
+          event_date: 1
+        }).skip(skip).limit(limit, function (err, results) {
+          reply({
+            results: results,
+            total_amount: count
+          })
+        })
 
-      db.events.find(eventsObj).sort({
-        event_date: 1
-      }).skip(skip).limit(limit, function (err, results) {
-        reply(results);
-      });
+      })
+
     },
 
     description: 'Get Events',
@@ -70,5 +88,4 @@ module.exports = {
 
   }
 
-
-};
+}
