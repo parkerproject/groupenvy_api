@@ -1,38 +1,38 @@
-require('dotenv').load();
-var collections = ['groups'];
-var mongojs = require('mongojs');
-var db = mongojs.connect(process.env.MONGODB_URL, collections);
-var Joi = require('joi');
-var _ = require('lodash');
-var server = require('../server');
-
+require('dotenv').load()
+var collections = ['groups']
+var mongojs = require('mongojs')
+var db = mongojs.connect(process.env.MONGODB_URL, collections)
+var Joi = require('joi')
+var _ = require('lodash')
+var server = require('../server')
 
 module.exports = {
   index: {
     handler: function (request, reply) {
-
-      "use strict";
+      'use strict'
       if (!request.query.key || request.query.key !== process.env.API_KEY) {
-        reply('You are not authorized');
+        reply('You are not authorized')
       }
 
-      var skip = request.query.offset || 0;
-      var limit = request.query.limit || 20;
+      var skip = request.query.offset || 0
+      var limit = request.query.limit || 20
 
-      var groupObject = {};
+      var groupObject = {}
 
       if (request.query.creator_id) {
-        groupObject.creator_id = request.query.creator_id;
+        groupObject.creator_id = request.query.creator_id
       }
-      //default
-      groupObject.group_status = request.query.group_status || 'public';
+      // default
+      groupObject.group_status = request.query.group_status || 'public'
 
       db.groups.count(function (error, nbDocs) {
         db.groups.find(groupObject).skip(Math.random() * nbDocs).limit(limit, function (err, results) {
-          reply(results);
-        });
-      });
-
+          reply({
+            results: results,
+            total_amount: nbDocs
+          })
+        })
+      })
 
     },
     description: 'Get Groups',
@@ -51,5 +51,4 @@ module.exports = {
 
   }
 
-
-};
+}
