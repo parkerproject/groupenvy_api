@@ -1,5 +1,5 @@
 require('dotenv').load()
-var collections = ['members', 'channel']
+var collections = ['members', 'channel', 'events', 'groups']
 var mongojs = require('mongojs')
 var db = mongojs.connect(process.env.MONGODB_URL, collections)
 var Joi = require('joi')
@@ -141,17 +141,57 @@ module.exports = {
         multi: true
       }, function () {
         if (request.payload.old_picture_id && request.payload.picture_id) {
-          db.channel.update({
-            picture_id: (user.old_picture_id == null || user.old_picture_id == '') ? {
-              $type: 10
-            } : user.old_picture_id
-          }, {
-            $set: {
-              picture_id: user.picture_id
-            }
-          }, {
-            multi: true
-          }, function () {
+          var $type = {
+            $type: 10
+          }
+
+          new Promise(function (resolve) {
+            // update picture in groupfeed
+            db.channel.update({
+              picture_id: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id
+            }, {
+              $set: {
+                picture_id: user.picture_id
+              }
+            }, {
+              multi: true
+            }, function () {
+              resolve()
+            })
+          }).then(function (res) {
+            return new Promise(function (resolve) {
+              // update picture in events
+              db.events.update({
+                creator_picture: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id,
+                creator_id: request.payload.user_id
+              }, {
+                $set: {
+                  creator_picture: user.picture_id
+                }
+              }, {
+                multi: true
+              }, function () {
+                resolve()
+              })
+            })
+          }).then(function (res) {
+            return new Promise(function (resolve) {
+              // update picture in groups
+              db.groups.update({
+                creator_picture: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id,
+                creator_id: request.payload.user_id
+              }, {
+                $set: {
+                  creator_picture: user.picture_id
+                }
+              }, {
+                multi: true
+              }, function () {
+                resolve()
+              })
+
+            })
+          }).then(function (res) {
             reply({
               status: 1,
               message: 'User has been updated'
@@ -174,8 +214,8 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         user_id: Joi.string().required().description('id of the user'),
-        picture_id: Joi.string().allow('').description('picture id of the user'),
-        old_picture_id: Joi.string().allow('').description('old picture id of the user'),
+        picture_id: Joi.string().allow(null).description('picture id of the user'),
+        old_picture_id: Joi.string().allow(null).description('old picture id of the user'),
         name: Joi.string().description('name of the user')
       }
     }

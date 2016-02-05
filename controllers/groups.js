@@ -25,7 +25,7 @@ module.exports = {
       // default
       groupObject.group_status = request.query.group_status || 'public'
 
-      db.groups.count(function (error, nbDocs) {
+      db.groups.count(groupObject, function (error, nbDocs) {
         db.groups.find(groupObject).skip(Math.random() * nbDocs).limit(limit, function (err, results) {
           reply({
             results: results,
