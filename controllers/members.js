@@ -1,5 +1,5 @@
 require('dotenv').load()
-var collections = ['members']
+var collections = ['members', 'channel']
 var mongojs = require('mongojs')
 var db = mongojs.connect(process.env.MONGODB_URL, collections)
 var Joi = require('joi')
@@ -129,6 +129,10 @@ module.exports = {
         user.name = request.payload.name
       }
 
+      if (request.payload.old_picture_id) {
+        user.old_picture_id = request.payload.old_picture_id
+      }
+
       db.members.update({
         user_id: request.payload.user_id
       }, {
@@ -136,11 +140,31 @@ module.exports = {
       }, {
         multi: true
       }, function () {
-        reply({
-          status: 1,
-          message: 'User has been updated'
-        })
+        if (request.payload.old_picture_id && request.payload.picture_id) {
+          db.channel.update({
+            picture_id: (user.old_picture_id == null || user.old_picture_id == '') ? {
+              $type: 10
+            } : user.old_picture_id
+          }, {
+            $set: {
+              picture_id: user.picture_id
+            }
+          }, {
+            multi: true
+          }, function () {
+            reply({
+              status: 1,
+              message: 'User has been updated'
+            })
+          })
+        } else {
+          reply({
+            status: 1,
+            message: 'User has been updated'
+          })
+        }
       })
+
     },
     description: 'Update a member in all groups and events',
     notes: "This will update a member's info in all groups and events",
@@ -150,8 +174,8 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         user_id: Joi.string().required().description('id of the user'),
-        picture_id: Joi.string().description('picture id of the user'),
-        old_picture_id: Joi.string().description('old picture id of the user'),
+        picture_id: Joi.string().allow('').description('picture id of the user'),
+        old_picture_id: Joi.string().allow('').description('old picture id of the user'),
         name: Joi.string().description('name of the user')
       }
     }
