@@ -129,9 +129,6 @@ module.exports = {
         user.name = request.payload.name
       }
 
-      if (request.payload.old_picture_id) {
-        user.old_picture_id = request.payload.old_picture_id
-      }
 
       db.members.update({
         user_id: request.payload.user_id
@@ -140,7 +137,8 @@ module.exports = {
       }, {
         multi: true
       }, function () {
-        if (request.payload.old_picture_id && request.payload.picture_id) {
+        if (request.payload.picture_id) {
+          var user.old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
           var $type = {
             $type: 10
           }
@@ -148,7 +146,7 @@ module.exports = {
           new Promise(function (resolve) {
             // update picture in groupfeed
             db.channel.update({
-              picture_id: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id
+              picture_id: (user.old_picture_id == null) ? $type : user.old_picture_id
             }, {
               $set: {
                 picture_id: user.picture_id
