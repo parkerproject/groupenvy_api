@@ -129,7 +129,6 @@ module.exports = {
         user.name = request.payload.name
       }
 
-
       db.members.update({
         user_id: request.payload.user_id
       }, {
@@ -138,7 +137,7 @@ module.exports = {
         multi: true
       }, function () {
         if (request.payload.picture_id) {
-          var user.old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
+          var old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
           var $type = {
             $type: 10
           }
@@ -146,7 +145,7 @@ module.exports = {
           new Promise(function (resolve) {
             // update picture in groupfeed
             db.channel.update({
-              picture_id: (user.old_picture_id == null) ? $type : user.old_picture_id
+              picture_id: (old_picture_id == null) ? $type : old_picture_id
             }, {
               $set: {
                 picture_id: user.picture_id
@@ -160,7 +159,7 @@ module.exports = {
             return new Promise(function (resolve) {
               // update picture in events
               db.events.update({
-                creator_picture: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id,
+                creator_picture: (old_picture_id == null) ? $type : old_picture_id,
                 creator_id: request.payload.user_id
               }, {
                 $set: {
@@ -176,7 +175,7 @@ module.exports = {
             return new Promise(function (resolve) {
               // update picture in groups
               db.groups.update({
-                creator_picture: (user.old_picture_id == null || user.old_picture_id == '') ? $type : user.old_picture_id,
+                creator_picture: (old_picture_id == null) ? $type : old_picture_id,
                 creator_id: request.payload.user_id
               }, {
                 $set: {
@@ -212,8 +211,8 @@ module.exports = {
       payload: {
         key: Joi.string().required().description('API key to access data'),
         user_id: Joi.string().required().description('id of the user'),
-        picture_id: Joi.string().allow(null).description('picture id of the user'),
-        old_picture_id: Joi.string().allow(null).description('old picture id of the user'),
+        picture_id: Joi.string().description('picture id of the user'),
+        old_picture_id: Joi.string().description('old picture id of the user'),
         name: Joi.string().description('name of the user')
       }
     }
