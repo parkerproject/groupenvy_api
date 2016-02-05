@@ -50,11 +50,11 @@ module.exports = {
             $geometry: {
               type: 'Point',
               coordinates: [Number(lng), Number(lat)]
-            }
+            },
+            $maxDistance: 8046.72
           }
         }
       }
-
 
       db.events.count(eventsObj, function (err, res) {
         count = res

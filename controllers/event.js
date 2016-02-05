@@ -28,6 +28,7 @@ module.exports = {
       db.events.find({
         name: name
       }).limit(1, function (err, docs) {
+        if (err) console.log(err)
         if (docs.length !== 0) {
           reply({
             status: 0,
@@ -37,6 +38,7 @@ module.exports = {
           _event.event_id = randtoken.generate(10)
           delete _event.key
           db.events.save(_event, function (err, result) {
+            if (err) console.log(err)
             if (result) {
               reply({
                 status: 1,
