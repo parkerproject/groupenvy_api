@@ -45,8 +45,6 @@ module.exports = {
         $search: q
       }
 
-      console.log(request.query.geo)
-
       new Promise(function (resolve) {
         var _radius = 5 / 3959 // radius in 5 miles
         if (request.query.geo) {
@@ -75,7 +73,9 @@ module.exports = {
           })
         })
       }).then(function (res) {
-        reply(res)
+        reply({
+          results: res
+        })
       })
     },
     description: 'Search events',
