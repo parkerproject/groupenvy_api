@@ -24,14 +24,31 @@ module.exports = {
       }
       // default
       groupObject.group_status = request.query.group_status || 'public'
+      console.log(groupObject)
 
       db.groups.count(groupObject, function (error, nbDocs) {
-        db.groups.find(groupObject).skip(Math.random() * nbDocs).limit(limit, function (err, results) {
+        db.groups.aggregate([
+          {
+            $match: groupObject
+          },
+          {
+            $skip: skip
+          },
+          {
+            $sample: {
+              size: limit
+            }
+          },
+          {
+            $limit: limit
+          }
+        ], function (err, results) {
           reply({
             results: results,
             total_amount: nbDocs
           })
         })
+
       })
 
     },

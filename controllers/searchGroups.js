@@ -27,6 +27,7 @@ module.exports = {
       }
 
       new Promise(function (resolve) {
+        console.log(queryObj)
         db.groups.find(queryObj, {
           score: {
             $meta: 'textScore'
