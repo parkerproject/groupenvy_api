@@ -159,7 +159,6 @@ module.exports = {
             return new Promise(function (resolve) {
               // update picture in events
               db.events.update({
-                creator_picture: (old_picture_id == null) ? $type : old_picture_id,
                 creator_id: request.payload.user_id
               }, {
                 $set: {
@@ -175,7 +174,6 @@ module.exports = {
             return new Promise(function (resolve) {
               // update picture in groups
               db.groups.update({
-                creator_picture: (old_picture_id == null) ? $type : old_picture_id,
                 creator_id: request.payload.user_id
               }, {
                 $set: {
