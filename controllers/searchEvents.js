@@ -46,10 +46,10 @@ module.exports = {
       }
 
       new Promise(function (resolve) {
-        var _radius = 5 / 3959 // radius in 5 miles
-        if (request.query.geo) {
-          queryObj.loc = _prepareQueryObject(_radius, request.query.geo)
-        }
+        // var _radius = 50 / 3959 // radius in 5 miles
+        // if (request.query.geo) {
+        //   queryObj.loc = _prepareQueryObject(_radius, request.query.geo)
+        // }
         resolve()
       }).then(function () {
         return new Promise(function (resolve) {
