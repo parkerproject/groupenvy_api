@@ -13,27 +13,30 @@ module.exports = {
         reply('You are not authorized')
       }
 
-      // var eventsObj = {}
+
 
       var endDateNotAvail = {
         end_date: {
           $exists: false
         }
       }
-
-      var endDateAvail = {
-        end_date: {
-          $gte: new Date().toISOString()
+      if (!request.query.creator_id) {
+        var endDateAvail = {
+          end_date: {
+            $gte: new Date().toISOString()
+          }
         }
-      }
 
-      var eventsObj = {
-        $or: [endDateNotAvail, endDateAvail]
+        var eventsObj = {
+          $or: [endDateNotAvail, endDateAvail]
+        }
       }
 
       var skip = request.query.offset || 0
       var limit = request.query.limit || 20
       var count = 0
+
+      var eventsObj = eventsObj || {}
 
       if (request.query.creator_id) {
         eventsObj.creator_id = request.query.creator_id
