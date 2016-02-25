@@ -137,26 +137,30 @@ module.exports = {
         multi: true
       }, function () {
         if (request.payload.picture_id) {
-          var old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
-          var $type = {
-            $type: 10
-          }
+          // var old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
+          // var $type = {
+          //   $type: 10
+          // }
 
-          console.log(old_picture_id, request.payload.user_id)
+          //  console.log(old_picture_id, request.payload.user_id)
 
           new Promise(function (resolve) {
-            // update picture in groupfeed
-            db.channel.update({
-              picture_id: (old_picture_id == null) ? $type : old_picture_id
-            }, {
-              $set: {
-                picture_id: user.picture_id
-              }
-            }, {
-              multi: true
-            }, function () {
+            if (request.payload.old_picture_id) {
+              db.channel.update({
+                picture_id: request.payload.old_picture_id
+              }, {
+                $set: {
+                  picture_id: request.payload.picture_id
+                }
+              }, {
+                multi: true
+              }, function () {
+                resolve()
+              })
+            } else {
               resolve()
-            })
+            }
+
           }).then(function (res) {
             return new Promise(function (resolve) {
               // update picture in events
