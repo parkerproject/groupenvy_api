@@ -142,6 +142,8 @@ module.exports = {
             $type: 10
           }
 
+          console.log(old_picture_id)
+
           new Promise(function (resolve) {
             // update picture in groupfeed
             db.channel.update({
