@@ -142,7 +142,7 @@ module.exports = {
             $type: 10
           }
 
-          console.log(old_picture_id)
+          console.log(old_picture_id, request.payload.user_id)
 
           new Promise(function (resolve) {
             // update picture in groupfeed
