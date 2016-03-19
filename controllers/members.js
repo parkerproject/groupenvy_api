@@ -138,7 +138,7 @@ module.exports = {
       }, function () {
         if (request.payload.picture_id) {
           let userEvents = ['event', 'group', 'event_joined', 'group_joined', 'comment']
-          let userEVents_2 = ['follow', 'group_invite', 'event_invite', 'reply']
+          let userEvents_2 = ['follow', 'group_invite', 'event_invite', 'reply']
 
           let queryType = {
             user_id: request.payload.user_id,
