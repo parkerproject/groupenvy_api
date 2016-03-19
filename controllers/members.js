@@ -126,7 +126,7 @@ module.exports = {
       }
 
       if (request.payload.name) {
-        user.name = request.payload.name
+        user.creator_name = request.payload.name
       }
 
       db.members.update({
