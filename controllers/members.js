@@ -119,7 +119,7 @@ module.exports = {
         reply('You are not authorized')
       }
 
-      var user = {}
+      let user = {}
 
       if (request.payload.picture_id) {
         user.picture_id = request.payload.picture_id
@@ -137,30 +137,35 @@ module.exports = {
         multi: true
       }, function () {
         if (request.payload.picture_id) {
-          // var old_picture_id = (request.payload.old_picture_id) ? request.payload.old_picture_id : null
-          // var $type = {
-          //   $type: 10
-          // }
+          let userEvents = ['event', 'group', 'event_joined', 'group_joined', 'comment']
+          let userEVents_2 = ['follow', 'group_invite', 'event_invite', 'reply']
 
-          //  console.log(old_picture_id, request.payload.user_id)
+          let queryType = {
+            user_id: request.payload.user_id,
+            activity_type: {
+              $in: userEvents
+            }
+          }
+
+          let queryType2 = {
+            target_user_id: request.payload.user_id,
+            activity_type: {
+              $in: userEvents_2
+            }
+          }
 
           new Promise(function (resolve) {
-            if (request.payload.old_picture_id) {
-              db.channel.update({
-                picture_id: request.payload.old_picture_id
-              }, {
-                $set: {
-                  picture_id: request.payload.picture_id
-                }
-              }, {
-                multi: true
-              }, function () {
-                resolve()
-              })
-            } else {
+            db.channel.update({
+              $or: [queryType, queryType2]
+            }, {
+              $set: {
+                picture_id: request.payload.picture_id
+              }
+            }, {
+              multi: true
+            }, function () {
               resolve()
-            }
-
+            })
           }).then(function (res) {
             return new Promise(function (resolve) {
               // update picture in events

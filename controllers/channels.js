@@ -174,11 +174,11 @@ module.exports = {
       var activityArr
       var activityStr
       var caseOne = ['event', 'group', 'event_joined', 'group_joined', 'comment']
-      var caseTwo = ['follow', 'group_invite', 'event_invite', 'reply']
+        //      var caseTwo = ['follow', 'group_invite', 'event_invite', 'reply']
       var users = []
       var user_ids
-      var dates
-      var maxDate
+        //    var dates
+        //    var maxDate
 
       if (request.query.activity_type) {
         activityStr = request.query.activity_type
