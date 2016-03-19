@@ -120,12 +120,15 @@ module.exports = {
       }
 
       let user = {}
+      let member = {}
 
       if (request.payload.picture_id) {
-        user.picture_id = request.payload.picture_id
+        user.creator_picture = request.payload.picture_id
+        member.picture_id = request.payload.picture_id
       }
 
       if (request.payload.name) {
+        member.creator_name = request.payload.name
         user.creator_name = request.payload.name
       }
 
@@ -172,9 +175,7 @@ module.exports = {
               db.events.update({
                 creator_id: request.payload.user_id
               }, {
-                $set: {
-                  creator_picture: user.picture_id
-                }
+                $set: user
               }, {
                 multi: true
               }, function () {
@@ -187,9 +188,7 @@ module.exports = {
               db.groups.update({
                 creator_id: request.payload.user_id
               }, {
-                $set: {
-                  creator_picture: user.picture_id
-                }
+                $set: user
               }, {
                 multi: true
               }, function () {

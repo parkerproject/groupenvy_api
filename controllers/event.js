@@ -127,6 +127,10 @@ module.exports = {
         eventObj.name = payload.name
       }
 
+      if (payload.creator_name) {
+        eventObj.creator_name = payload.creator_name
+      }
+
       if (payload.description) {
         eventObj.description = payload.description
       }
@@ -181,6 +185,7 @@ module.exports = {
         event_status: Joi.string().description('event status should be public or private'),
         picture_id: Joi.string().description('image id of event image'),
         creator_id: Joi.string().required().description('id of event creator'),
+        creator_name: Joi.string().description('name of event creator'),
         location: Joi.string().description('event location'),
         geo: Joi.string().description('geo location of event, format should be geo=longitude,latitude'),
         event_date: Joi.string().description('event date'),
