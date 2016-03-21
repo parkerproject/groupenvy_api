@@ -132,12 +132,12 @@ module.exports = {
         user.creator_name = request.payload.name
       }
 
-      console.log(user)
+      console.log(user, request.payload.user_id)
 
       db.members.update({
         user_id: request.payload.user_id
       }, {
-        $set: user
+        $set: member
       }, {
         multi: true
       }, function () {
