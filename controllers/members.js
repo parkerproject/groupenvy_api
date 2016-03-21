@@ -128,11 +128,9 @@ module.exports = {
       }
 
       if (request.payload.name) {
-        member.creator_name = request.payload.name
+        member.name = request.payload.name
         user.creator_name = request.payload.name
       }
-
-      console.log(user, request.payload.user_id)
 
       db.members.update({
         user_id: request.payload.user_id
@@ -141,75 +139,61 @@ module.exports = {
       }, {
         multi: true
       }, function () {
-        if (request.payload.picture_id) {
-          let userEvents = ['event', 'group', 'event_joined', 'group_joined', 'comment']
-          let userEvents_2 = ['follow', 'group_invite', 'event_invite', 'reply']
+        db.events.update({
+          creator_id: request.payload.user_id
+        }, {
+          $set: user
+        }, {
+          multi: true
+        }, function () {
+          // update picture in groups
+          db.groups.update({
+            creator_id: request.payload.user_id
+          }, {
+            $set: user
+          }, {
+            multi: true
+          }, function () {
+            if (request.payload.picture_id) {
+              let userEvents = ['event', 'group', 'event_joined', 'group_joined', 'comment']
+              let userEvents_2 = ['follow', 'group_invite', 'event_invite', 'reply']
 
-          let queryType = {
-            user_id: request.payload.user_id,
-            activity_type: {
-              $in: userEvents
-            }
-          }
-
-          let queryType2 = {
-            target_user_id: request.payload.user_id,
-            activity_type: {
-              $in: userEvents_2
-            }
-          }
-
-          new Promise(function (resolve) {
-            db.channel.update({
-              $or: [queryType, queryType2]
-            }, {
-              $set: {
-                picture_id: request.payload.picture_id
+              let queryType = {
+                user_id: request.payload.user_id,
+                activity_type: {
+                  $in: userEvents
+                }
               }
-            }, {
-              multi: true
-            }, function () {
-              resolve()
-            })
-          }).then(function (res) {
-            return new Promise(function (resolve) {
-              // update picture in events
-              db.events.update({
-                creator_id: request.payload.user_id
+              let queryType2 = {
+                target_user_id: request.payload.user_id,
+                activity_type: {
+                  $in: userEvents_2
+                }
+              }
+              db.channel.update({
+                $or: [queryType, queryType2]
               }, {
-                $set: user
-              }, {
-                multi: true
-              }, function () {
-                resolve()
-              })
-            })
-          }).then(function (res) {
-            return new Promise(function (resolve) {
-              // update picture in groups
-              db.groups.update({
-                creator_id: request.payload.user_id
-              }, {
-                $set: user
+                $set: {
+                  picture_id: request.payload.picture_id
+                }
               }, {
                 multi: true
               }, function () {
-                resolve()
+                reply({
+                  status: 1,
+                  message: 'User has been updated'
+                })
               })
+            } else {
+              reply({
+                status: 1,
+                message: 'User has been updated'
+              })
+            }
 
-            })
-          }).then(function (res) {
-            reply({
-              status: 1,
-              message: 'User has been updated'
-            })
           })
-        } else {
-          reply({
-            status: 1,
-            message: 'User has been updated'
-          })
-        }
+        })
+
       })
 
     },
