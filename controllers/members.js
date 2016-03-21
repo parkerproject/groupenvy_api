@@ -132,6 +132,8 @@ module.exports = {
         user.creator_name = request.payload.name
       }
 
+      console.log(user)
+
       db.members.update({
         user_id: request.payload.user_id
       }, {
