@@ -1,9 +1,7 @@
 var requireDirectory = require('require-directory')
-
 module.exports = function (server) {
   var controller = requireDirectory(module, './controllers')
-
-  // Array of routes for Hapi
+    // Array of routes for Hapi
   var routeTable = [{
     method: 'GET',
     path: '/images/{path*}',
@@ -20,10 +18,6 @@ module.exports = function (server) {
     method: 'GET',
     path: '/video/{path*}',
     config: controller.assets.video
-  }, {
-    method: 'POST',
-    path: '/email/send',
-    config: controller.email.send
   }, {
     method: 'POST',
     path: '/api/group/create',
@@ -116,6 +110,10 @@ module.exports = function (server) {
     method: 'GET',
     path: '/api/groups/search',
     config: controller.searchGroups.index
+  }, {
+    method: 'POST',
+    path: '/api/email/welcome',
+    config: controller.email.welcome
   }]
   return routeTable
 }

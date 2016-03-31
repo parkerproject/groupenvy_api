@@ -1,39 +1,27 @@
-require('dotenv').load();
-var collections = ['users'];
-var db = require("mongojs").connect(process.env.MONGODB_URL, collections);
-var Joi = require('joi');
-var _ = require('lodash');
-
-
+'use strict'
+require('dotenv').load()
+const swig = require('swig')
+const sendEmail = require('./send_email')
 module.exports = {
-  send: {
-    handler: function (request, reply) {
-
-      "use strict";
-      var email = request.payload;
-
-      db.users.find({
+  welcome: {
+    handler: (request, reply) => {
+      if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
+        reply('You need an api key to access data')
+      }
+      let subject = 'Welcome to Groupenvy'
+      let email = request.payload.email
+      swig.renderFile(appRoot + '/views/welcome.html', {
+        name: request.payload.name,
         email: email
-      }).limit(1, function (err, docs) {
-
-        if (docs.length !== 0) {
-          reply('You have successful signed up for early access');
-        } else {
-          db.users.save(email, function (err, result) {
-            if (result) {
-              reply('You have successful signed up for early access');
-            }
-          });
+      }, function (err, content) {
+        if (err) {
+          throw err
         }
-
-      });
-    },
-
-    validate: {
-      query: {}
+        sendEmail(email, subject, content)
+        reply({
+          message: 'Email sent'
+        })
+      })
     }
-
   }
-
-
-};
+}

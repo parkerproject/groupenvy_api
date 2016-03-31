@@ -121,10 +121,12 @@ module.exports = {
 
       let user = {}
       let member = {}
+      let channel_user = {}
 
       if (request.payload.picture_id) {
         user.creator_picture = request.payload.picture_id
         member.picture_id = request.payload.picture_id
+        chann.picture_id = request.payload.picture_id
       }
 
       if (request.payload.name) {
@@ -173,9 +175,7 @@ module.exports = {
               db.channel.update({
                 $or: [queryType, queryType2]
               }, {
-                $set: {
-                  picture_id: request.payload.picture_id
-                }
+                $set: channel_user
               }, {
                 multi: true
               }, function () {
