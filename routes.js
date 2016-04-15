@@ -1,7 +1,7 @@
 var requireDirectory = require('require-directory')
 module.exports = function (server) {
   var controller = requireDirectory(module, './controllers')
-    // Array of routes for Hapi
+  // Array of routes for Hapi
   var routeTable = [{
     method: 'GET',
     path: '/images/{path*}',
@@ -114,6 +114,10 @@ module.exports = function (server) {
     method: 'POST',
     path: '/api/email/welcome',
     config: controller.email.welcome
+  }, {
+    method: 'POST',
+    path: '/api/email/report',
+    config: controller.email.report
   }]
   return routeTable
 }

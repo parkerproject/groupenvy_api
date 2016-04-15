@@ -23,5 +23,20 @@ module.exports = {
         })
       })
     }
+  },
+  report: {
+    handler: (request, reply) => {
+      if (!request.payload.key || request.payload.key !== process.env.API_KEY) {
+        reply('You need an api key to access data')
+      }
+      let subject = request.payload.subject
+      let body = request.payload.content
+
+      sendEmail('support@groupenvy.com', subject, content)
+      reply({
+        message: 'Email sent'
+      })
+
+    }
   }
 }
